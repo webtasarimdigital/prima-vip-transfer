@@ -1,0 +1,31 @@
+{
+  "Navigation": {
+    "home": "Startseite",
+    "about": "Über Uns",
+    "reservation": "Reservierung",
+    "gallery": "Galerie",
+    "contact": "Kontakt"
+  },
+  "Hero": {
+    "title": "Antalya VIP Transfer Service",
+    "subtitle": "Die Adresse für sicheren, komfortablen und luxuriösen Transport",
+    "from": "Von",
+    "to": "Nach",
+    "pax": "Personen",
+    "currency": "Währung",
+    "search": "Fahrzeug Finden",
+    "select": "Auswählen"
+  },
+  "Home": {
+    "aboutTitle": "Warum Uns Wählen?",
+    "aboutText": "Mit jahrelanger Erfahrung bieten wir erstklassige VIP-Transferdienste in Antalya. Mit unseren luxuriösen Fahrzeugen und professionellen Fahrern wird Ihre Reise zum Vergnügen.",
+    "priceListTitle": "Preisliste",
+    "reviewsTitle": "Kundenbewertungen"
+  },
+  "Currencies": {
+    "EUR": "EUR (€)",
+    "USD": "USD ($)",
+    "GBP": "GBP (£)",
+    "TRY": "TRY (₺)"
+  }
+}

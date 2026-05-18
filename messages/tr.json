@@ -1,0 +1,31 @@
+{
+  "Navigation": {
+    "home": "Ana Sayfa",
+    "about": "Hakkımızda",
+    "reservation": "Rezervasyon Yap",
+    "gallery": "Foto Galeri",
+    "contact": "İletişim"
+  },
+  "Hero": {
+    "title": "Antalya VIP Transfer Hizmeti",
+    "subtitle": "Güvenli, Konforlu ve Lüks Ulaşımın Adresi",
+    "from": "Nereden",
+    "to": "Nereye",
+    "pax": "Kişi Sayısı",
+    "currency": "Para Birimi",
+    "search": "Araç Bul",
+    "select": "Seçiniz"
+  },
+  "Home": {
+    "aboutTitle": "Neden Bizi Seçmelisiniz?",
+    "aboutText": "Yılların tecrübesiyle Antalya'da premium VIP transfer hizmeti sunuyoruz. Lüks araçlarımız ve profesyonel şoförlerimizle yolculuğunuzu keyfe dönüştürüyoruz.",
+    "priceListTitle": "Fiyat Listesi",
+    "reviewsTitle": "Müşteri Yorumları"
+  },
+  "Currencies": {
+    "EUR": "EUR (€)",
+    "USD": "USD ($)",
+    "GBP": "GBP (£)",
+    "TRY": "TRY (₺)"
+  }
+}
