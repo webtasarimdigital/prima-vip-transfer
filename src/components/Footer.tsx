@@ -13,9 +13,7 @@ export default function Footer({ phone, email }: { phone: string, email: string 
           {/* Brand */}
           <div>
             <Link href="/" className="inline-block mb-6">
-              <span className="text-3xl font-bold text-white tracking-widest uppercase">
-                Prima <span className="text-gold">VIP</span>
-              </span>
+              <img src="/prima-vip-logo.png" alt="Prima VIP Transfer" className="h-12 md:h-16 w-auto object-contain" />
             </Link>
             <p className="text-gray-400 leading-relaxed mb-6">
               Antalya'nın önde gelen VIP transfer hizmeti. Konfor, güvenlik ve lüksü bir araya getirerek seyahatlerinizi unutulmaz kılıyoruz.

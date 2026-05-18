@@ -1,18 +1,15 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/routing';
-import { Phone, Menu, X, Globe } from 'lucide-react';
+import { useTranslations, useLocale } from 'next-intl';
+import { Link, usePathname } from '@/i18n/routing';
+import { Phone, Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
 
 export default function Header({ phone }: { phone: string }) {
   const t = useTranslations('Navigation');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  
-  // Extract current locale from pathname (e.g. /tr/hakkimizda -> tr)
-  const currentLocale = pathname.split('/')[1] || 'tr';
+  const currentLocale = useLocale();
 
   const locales = [
     { code: 'tr', flag: '/turkey.svg', label: 'TR' },
@@ -28,9 +25,7 @@ export default function Header({ phone }: { phone: string }) {
           
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-white tracking-widest uppercase">
-              Prima <span className="text-gold">VIP</span>
-            </span>
+            <img src="/prima-vip-logo.png" alt="Prima VIP Transfer" className="h-10 md:h-14 w-auto object-contain" />
           </Link>
 
           {/* Desktop Nav */}
@@ -54,7 +49,8 @@ export default function Header({ phone }: { phone: string }) {
               {locales.map((l) => (
                 <Link 
                   key={l.code} 
-                  href={pathname.replace(`/${currentLocale}`, `/${l.code}`)} 
+                  href={pathname} 
+                  locale={l.code as any}
                   className={`transition-transform hover:scale-110 ${currentLocale !== l.code ? 'opacity-50 hover:opacity-100' : 'scale-110 shadow-[0_0_10px_rgba(212,175,55,0.5)] rounded-sm'}`}
                   title={l.label}
                 >
@@ -95,7 +91,8 @@ export default function Header({ phone }: { phone: string }) {
               {locales.map((l) => (
                 <Link 
                   key={l.code} 
-                  href={pathname.replace(`/${currentLocale}`, `/${l.code}`)} 
+                  href={pathname} 
+                  locale={l.code as any}
                   className={`transition-transform hover:scale-110 ${currentLocale !== l.code ? 'opacity-50 hover:opacity-100' : 'scale-125 shadow-[0_0_10px_rgba(212,175,55,0.5)] rounded-sm'}`}
                 >
                   <img src={l.flag} alt={l.label} className="w-8 h-5.5 object-cover rounded-sm" />

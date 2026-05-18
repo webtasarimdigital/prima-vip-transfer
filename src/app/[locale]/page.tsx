@@ -1,7 +1,8 @@
 import { useTranslations } from 'next-intl';
 import Hero from '@/components/Hero';
 import PriceList from '@/components/PriceList';
-import { ShieldCheck, Clock, Star } from 'lucide-react';
+import { ShieldCheck, Clock, Star, Award, Compass, HeartHandshake, CheckCircle } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Home() {
   const t = useTranslations('Home');
@@ -10,101 +11,213 @@ export default function Home() {
     <>
       <Hero />
       
-      {/* About Section */}
-      <section className="py-20 bg-primary">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white uppercase tracking-wider inline-block relative pb-4 mb-6">
-              {t('aboutTitle')}
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-gold"></div>
+      {/* Why Choose Us Section */}
+      <section className="py-24 bg-zinc-950 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-1/3 left-0 w-96 h-96 bg-gold/5 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="absolute bottom-1/3 right-0 w-96 h-96 bg-gold/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
+          
+          {/* Header Title */}
+          <div className="max-w-3xl mx-auto text-center mb-20">
+            <h2 className="text-sm font-bold text-gold tracking-[0.2em] uppercase mb-3 flex items-center justify-center gap-2">
+              <Award size={18} className="animate-pulse" /> PRİMA VIP TRANSFER
             </h2>
-            <p className="text-gray-400 text-lg leading-relaxed">
-              {t('aboutText')}
+            <h1 className="text-3xl md:text-5xl font-extrabold text-white uppercase tracking-wider inline-block relative pb-4">
+              Neden Bizi Seçmelisiniz ?
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-[3px] bg-gold rounded-full"></div>
+            </h1>
+            <p className="text-zinc-400 text-base md:text-lg leading-relaxed mt-6">
+              Antalya'nın en prestijli VIP transfer servisi olarak, seyahatinizin her anını kusursuz ve konforlu kılmak için çalışıyoruz.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-secondary p-8 rounded-xl text-center border border-gray-800 hover:border-gold/50 transition-colors">
-              <div className="w-16 h-16 mx-auto bg-gold/10 rounded-full flex items-center justify-center mb-6">
-                <ShieldCheck size={32} className="text-gold" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Güvenli Seyahat</h3>
-              <p className="text-gray-400">Deneyimli şoförlerimiz ve periyodik bakımı yapılan araçlarımızla güvenliğiniz önceliğimizdir.</p>
-            </div>
+          {/* Premium Split Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
-            <div className="bg-secondary p-8 rounded-xl text-center border border-gray-800 hover:border-gold/50 transition-colors">
-              <div className="w-16 h-16 mx-auto bg-gold/10 rounded-full flex items-center justify-center mb-6">
-                <Clock size={32} className="text-gold" />
+            {/* Visual Column - Left Side */}
+            <div className="lg:col-span-5 relative group">
+              {/* Main Luxury Image */}
+              <div className="relative w-full h-[450px] md:h-[550px] rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl transition-transform duration-700 group-hover:scale-[1.01]">
+                <Image 
+                  src="/prima-vip-arac-ici.jpeg" 
+                  alt="Prima VIP Luxury Interior" 
+                  fill 
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                {/* Visual overlay gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-3">Zamanında Teslim</h3>
-              <p className="text-gray-400">Sizi istediğiniz noktadan tam zamanında alıp, gideceğiniz yere vaktinde ulaştırıyoruz.</p>
-            </div>
-            
-            <div className="bg-secondary p-8 rounded-xl text-center border border-gray-800 hover:border-gold/50 transition-colors">
-              <div className="w-16 h-16 mx-auto bg-gold/10 rounded-full flex items-center justify-center mb-6">
-                <Star size={32} className="text-gold" />
+
+              {/* Float Card 1: Customer Stat */}
+              <div className="absolute -top-6 -left-6 bg-zinc-900/90 backdrop-blur-md border border-zinc-800 p-5 rounded-xl hidden md:flex items-center gap-4 shadow-[0_15px_30px_rgba(0,0,0,0.5)] transition-all group-hover:border-gold/30">
+                <div className="w-12 h-12 bg-gold/10 rounded-lg flex items-center justify-center border border-gold/20">
+                  <HeartHandshake className="text-gold" size={24} />
+                </div>
+                <div>
+                  <div className="text-2xl font-black text-white">10k+</div>
+                  <div className="text-xs text-zinc-500 font-bold tracking-wider uppercase">Mutlu Müşteri</div>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-3">VIP Konfor</h3>
-              <p className="text-gray-400">Ultra lüks tasarımlı araçlarımızda yolculuğun tadını çıkarırken, Wi-Fi ve ikramlarımızdan faydalanın.</p>
+
+              {/* Float Card 2: Active support */}
+              <div className="absolute -bottom-6 -right-6 bg-zinc-900/90 backdrop-blur-md border border-zinc-800 p-5 rounded-xl hidden md:flex items-center gap-4 shadow-[0_15px_30px_rgba(0,0,0,0.5)] transition-all group-hover:border-gold/30">
+                <div className="w-12 h-12 bg-gold/10 rounded-lg flex items-center justify-center border border-gold/20">
+                  <Clock className="text-gold animate-spin-slow" size={24} />
+                </div>
+                <div>
+                  <div className="text-lg font-black text-white">7/24 Aktif</div>
+                  <div className="text-xs text-zinc-500 font-bold tracking-wider uppercase">Canlı Rezervasyon</div>
+                </div>
+              </div>
             </div>
+
+            {/* Benefit Cards Column - Right Side */}
+            <div className="lg:col-span-7 space-y-6">
+              
+              {/* Feature 1 */}
+              <div className="bg-zinc-900/50 hover:bg-zinc-900 border border-zinc-800/80 hover:border-gold/30 p-6 rounded-2xl transition-all duration-300 shadow-lg flex flex-col md:flex-row gap-5 group">
+                <div className="w-14 h-14 bg-gold/5 rounded-xl border border-gold/15 flex items-center justify-center shrink-0 group-hover:bg-gold/10 transition-colors">
+                  <ShieldCheck size={28} className="text-gold" />
+                </div>
+                <div>
+                  <h3 className="text-lg md:text-xl font-bold text-white mb-2 tracking-wide group-hover:text-gold transition-colors flex items-center gap-2">
+                    Maksimum Güvenlik & Hijyen
+                  </h3>
+                  <p className="text-zinc-400 text-sm leading-relaxed">
+                    Tüm araçlarımız her transfer öncesinde tamamen dezenfekte edilerek sterilize edilir. Deneyimli, ileri sürüş teknikleri eğitimi almış profesyonel kaptanlarımızla güvenli yolculuğun tadını çıkarın.
+                  </p>
+                </div>
+              </div>
+
+              {/* Feature 2 */}
+              <div className="bg-zinc-900/50 hover:bg-zinc-900 border border-zinc-800/80 hover:border-gold/30 p-6 rounded-2xl transition-all duration-300 shadow-lg flex flex-col md:flex-row gap-5 group">
+                <div className="w-14 h-14 bg-gold/5 rounded-xl border border-gold/15 flex items-center justify-center shrink-0 group-hover:bg-gold/10 transition-colors">
+                  <Compass size={28} className="text-gold" />
+                </div>
+                <div>
+                  <h3 className="text-lg md:text-xl font-bold text-white mb-2 tracking-wide group-hover:text-gold transition-colors">
+                    Kişiselleştirilmiş Lüks & Konfor
+                  </h3>
+                  <p className="text-zinc-400 text-sm leading-relaxed">
+                    Ultra lüks donanımlı Maybach ve Vito araçlarımızda ücretsiz yüksek hızlı Wi-Fi, Apple TV, kaliteli ses sistemleri, premium atıştırmalıklar, soğuk içecek ikramları ve bebek koltuğu standart olarak sunulur.
+                  </p>
+                </div>
+              </div>
+
+              {/* Feature 3 */}
+              <div className="bg-zinc-900/50 hover:bg-zinc-900 border border-zinc-800/80 hover:border-gold/30 p-6 rounded-2xl transition-all duration-300 shadow-lg flex flex-col md:flex-row gap-5 group">
+                <div className="w-14 h-14 bg-gold/5 rounded-xl border border-gold/15 flex items-center justify-center shrink-0 group-hover:bg-gold/10 transition-colors">
+                  <Clock size={28} className="text-gold" />
+                </div>
+                <div>
+                  <h3 className="text-lg md:text-xl font-bold text-white mb-2 tracking-wide group-hover:text-gold transition-colors">
+                    Uçuş Takip & Kesintisiz Zamanlama
+                  </h3>
+                  <p className="text-zinc-400 text-sm leading-relaxed">
+                    Uçağınız rötar yapsa bile uçuş kodunuz üzerinden anlık takip yapıyor, siz havalimanına indiğiniz anda kapıda hazır bekliyoruz. Ek ücret talep etmeden, zaman kaybı yaşatmadan konforlu bir karşılama sunuyoruz.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
           </div>
         </div>
       </section>
 
+      {/* Dynamic Price List */}
       <PriceList />
       
-      {/* Fake Reviews Section */}
-      <section className="py-20 bg-primary border-t border-gray-800">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white uppercase tracking-wider inline-block relative pb-4">
-              {t('reviewsTitle')}
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-gold"></div>
-            </h2>
+      {/* Premium Reviews Section */}
+      <section className="py-24 bg-zinc-950 border-t border-zinc-900/60 relative overflow-hidden">
+        {/* Glow overlay */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gold/5 rounded-full blur-[150px] pointer-events-none"></div>
+
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
+          
+          {/* Section Header */}
+          <div className="text-center mb-20">
+            <h2 className="text-sm font-bold text-gold tracking-[0.25em] uppercase mb-3">MÜŞTERİ DENEYİMLERİ</h2>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-white uppercase tracking-wider inline-block relative pb-4">
+              Bizimle Seyahat Edenler Ne Diyor?
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-[2px] bg-gold"></div>
+            </h1>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-black p-6 rounded-xl border border-gray-800">
-              <div className="flex text-gold mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} size={18} fill="currentColor" />)}
+          {/* Glowing Review Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            {/* Card 1 */}
+            <div className="bg-zinc-900/40 hover:bg-zinc-900 border border-zinc-800/80 hover:border-gold/30 p-8 rounded-2xl transition-all duration-300 flex flex-col justify-between shadow-xl group">
+              <div>
+                <div className="flex text-gold mb-6 gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={18} fill="currentColor" className="transition-transform group-hover:scale-110" />
+                  ))}
+                </div>
+                <p className="text-zinc-300 italic text-sm md:text-base leading-relaxed mb-8">
+                  "Our driver was waiting for us at the airport holding a sign. The Maybach was incredibly clean and the drinks were a nice touch. Best transfer in Antalya!"
+                </p>
               </div>
-              <p className="text-gray-300 italic mb-6">"Our driver was waiting for us at the airport holding a sign. The Maybach was incredibly clean and the drinks were a nice touch. Best transfer in Antalya!"</p>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center font-bold text-xl text-gray-400">M</div>
+                <div className="w-12 h-12 bg-gradient-to-tr from-gold to-yellow-600 rounded-full flex items-center justify-center font-extrabold text-xl text-black shadow-md">
+                  M
+                </div>
                 <div>
-                  <h4 className="text-white font-bold">Michael Schmidt</h4>
-                  <span className="text-sm text-gray-500">Berlin, Germany</span>
+                  <h4 className="text-white font-bold text-sm md:text-base tracking-wide">Michael Schmidt</h4>
+                  <span className="text-xs text-zinc-500 font-medium">Berlin, Germany</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-black p-6 rounded-xl border border-gray-800">
-              <div className="flex text-gold mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} size={18} fill="currentColor" />)}
+            {/* Card 2 */}
+            <div className="bg-zinc-900/40 hover:bg-zinc-900 border border-zinc-800/80 hover:border-gold/30 p-8 rounded-2xl transition-all duration-300 flex flex-col justify-between shadow-xl group">
+              <div>
+                <div className="flex text-gold mb-6 gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={18} fill="currentColor" className="transition-transform group-hover:scale-110" />
+                  ))}
+                </div>
+                <p className="text-zinc-300 italic text-sm md:text-base leading-relaxed mb-8">
+                  "I usually use standard taxis, but trying Prima VIP changed my mind. Extremely professional, punctual, and the luxury van made us feel like celebrities."
+                </p>
               </div>
-              <p className="text-gray-300 italic mb-6">"I usually use standard taxis, but trying Prima VIP changed my mind. Extremely professional, punctual, and the luxury van made us feel like celebrities."</p>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center font-bold text-xl text-gray-400">E</div>
+                <div className="w-12 h-12 bg-gradient-to-tr from-gold to-yellow-600 rounded-full flex items-center justify-center font-extrabold text-xl text-black shadow-md">
+                  E
+                </div>
                 <div>
-                  <h4 className="text-white font-bold">Elena Ivanova</h4>
-                  <span className="text-sm text-gray-500">Moscow, Russia</span>
+                  <h4 className="text-white font-bold text-sm md:text-base tracking-wide">Elena Ivanova</h4>
+                  <span className="text-xs text-zinc-500 font-medium">Moscow, Russia</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-black p-6 rounded-xl border border-gray-800">
-              <div className="flex text-gold mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} size={18} fill="currentColor" />)}
+            {/* Card 3 */}
+            <div className="bg-zinc-900/40 hover:bg-zinc-900 border border-zinc-800/80 hover:border-gold/30 p-8 rounded-2xl transition-all duration-300 flex flex-col justify-between shadow-xl group">
+              <div>
+                <div className="flex text-gold mb-6 gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={18} fill="currentColor" className="transition-transform group-hover:scale-110" />
+                  ))}
+                </div>
+                <p className="text-zinc-300 italic text-sm md:text-base leading-relaxed mb-8">
+                  "Fantastic experience from start to finish. The booking via WhatsApp was so easy and the vehicle condition exceeded our expectations. Highly recommend!"
+                </p>
               </div>
-              <p className="text-gray-300 italic mb-6">"Fantastic experience from start to finish. The booking via WhatsApp was so easy and the vehicle condition exceeded our expectations. Highly recommend!"</p>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center font-bold text-xl text-gray-400">J</div>
+                <div className="w-12 h-12 bg-gradient-to-tr from-gold to-yellow-600 rounded-full flex items-center justify-center font-extrabold text-xl text-black shadow-md">
+                  J
+                </div>
                 <div>
-                  <h4 className="text-white font-bold">James Wilson</h4>
-                  <span className="text-sm text-gray-500">London, UK</span>
+                  <h4 className="text-white font-bold text-sm md:text-base tracking-wide">James Wilson</h4>
+                  <span className="text-xs text-zinc-500 font-medium">London, UK</span>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </section>

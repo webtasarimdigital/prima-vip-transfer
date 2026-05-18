@@ -1,14 +1,37 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+const DEFAULT_EXTRAS = [
+  { name: 'Kutlama Paketi (Balon + Süsleme)', price: 30, currency: 'EUR', is_active: true },
+  { name: 'Çiçek', price: 40, currency: 'EUR', is_active: true },
+  { name: 'Bira (4 Adet Efes/Tuborg)', price: 20, currency: 'EUR', is_active: true },
+  { name: 'Meyve Tabağı (Mevsim Meyveleri)', price: 25, currency: 'EUR', is_active: true },
+  { name: 'Viski (Chivas Regal 70cl + Enerji)', price: 120, currency: 'EUR', is_active: true },
+  { name: 'Vodka (Absolut 70cl + Enerji)', price: 100, currency: 'EUR', is_active: true },
+  { name: 'Şampanya', price: 60, currency: 'EUR', is_active: true },
+  { name: 'Redbull (4 Adet)', price: 15, currency: 'EUR', is_active: true },
+];
+
 export async function GET() {
   try {
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('extra_services')
       .select('*')
       .order('id', { ascending: true });
 
     if (error) throw error;
+
+    // Auto-seed if the database table is completely empty
+    if (!data || data.length === 0) {
+      console.log('extra_services tablosu boş, varsayılan ekstralar ekleniyor...');
+      const { data: insertedData, error: insertError } = await supabase
+        .from('extra_services')
+        .insert(DEFAULT_EXTRAS)
+        .select();
+
+      if (insertError) throw insertError;
+      data = insertedData || [];
+    }
 
     return NextResponse.json(data);
   } catch (error: any) {
