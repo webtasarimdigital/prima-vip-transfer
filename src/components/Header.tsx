@@ -37,6 +37,7 @@ export default function Header({ phone }: { phone: string }) {
                 key={l.code} 
                 href={pathname} 
                 locale={l.code as any}
+                prefetch={true}
                 className={`transition-transform hover:scale-110 ${currentLocale !== l.code ? 'opacity-40 hover:opacity-100' : 'scale-110 ring-1 ring-gold shadow-[0_0_8px_rgba(212,175,55,0.4)] rounded-sm'}`}
                 title={l.label}
               >
@@ -86,6 +87,7 @@ export default function Header({ phone }: { phone: string }) {
                   key={l.code} 
                   href={pathname} 
                   locale={l.code as any}
+                  prefetch={true}
                   className={`transition-transform hover:scale-110 ${currentLocale !== l.code ? 'opacity-50 hover:opacity-100' : 'scale-110 shadow-[0_0_10px_rgba(212,175,55,0.5)] rounded-sm'}`}
                   title={l.label}
                 >

@@ -12,7 +12,7 @@ export async function generateMetadata({ params: { locale } }: { params: { local
 }
 
 export default async function ContactPage() {
-  const t = useTranslations('ContactPage');
+  const t = await getTranslations('ContactPage');
 
   // Fetch dynamic phone and email from Supabase settings table
   let phone = '05323591039';
