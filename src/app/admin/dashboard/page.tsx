@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Settings, Route, Image as ImageIcon, LogOut, Plus, Trash2, Save, Phone, Mail } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Settings, Route, Image as ImageIcon, LogOut, Plus, Trash2, Save, Phone, Mail, Upload, Edit2, X } from 'lucide-react';
 
 type Tab = 'settings' | 'routes' | 'gallery' | 'extras';
 
@@ -28,6 +28,17 @@ interface GalleryItem {
   type: string;
 }
 
+const DEFAULT_ROUTES: Record<string, number> = {
+  'Antalya Merkez': 40, 'Lara': 40, 'Kundu': 40, 'Kaleiçi': 40, 'Konyaaltı': 40,
+  'Belek': 45, 'Boğazkent': 45, 'Denizyaka': 50, 'Kumköy': 50, 'Gündoğdu': 50,
+  'Çolaklı': 50, 'Evrenseki': 50, 'Side': 50, 'Sorgun': 50, 'Manavgat': 50,
+  'Titreyengöl': 50, 'Kızılot': 60, 'Kızılağaç': 60, 'Okurcalar': 70,
+  'Avsallar': 75, 'İncekum': 70, 'Çenger': 70, 'Konaklı': 75, 'Türkler': 75,
+  'Alanya': 75, 'Mahmutlar': 90, 'Kargıcak': 90, 'Kestel': 90,
+  'Beldibi': 50, 'Göynük': 50, 'Kemer': 50, 'Çamyuva': 55, 'Kiriş': 55,
+  'Tekirova': 60, 'Olimpos': 85, 'Adrasan': 95,
+};
+
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<Tab>('settings');
   const [loading, setLoading] = useState(false);
@@ -40,10 +51,12 @@ export default function AdminDashboard() {
   // Routes
   const [routes, setRoutes] = useState<RoutePrice[]>([]);
   const [newRoute, setNewRoute] = useState({ from: 'Antalya Havalimanı', to: '', price: 0, currency: 'EUR' });
+  const [editingRoute, setEditingRoute] = useState<RoutePrice | null>(null);
 
   // Gallery
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [newGallery, setNewGallery] = useState({ url: '', type: 'image' });
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Extras
   const [extras, setExtras] = useState<ExtraService[]>([]);
@@ -112,6 +125,20 @@ export default function AdminDashboard() {
     showMessage('Rota eklendi!');
   };
 
+  const saveEditedRoute = async () => {
+    if (!editingRoute) return;
+    setLoading(true);
+    await fetch('/api/admin/routes', {
+      method: 'POST', // The endpoint uses upsert, so POST works for update if we pass ID or it matches unique constraint
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editingRoute),
+    });
+    setEditingRoute(null);
+    await fetchRoutes();
+    setLoading(false);
+    showMessage('Rota güncellendi!');
+  };
+
   const deleteRoute = async (id: number) => {
     if (!confirm('Bu rotayı silmek istediğinize emin misiniz?')) return;
     await fetch(`/api/admin/routes?id=${id}`, { method: 'DELETE' });
@@ -119,11 +146,59 @@ export default function AdminDashboard() {
     showMessage('Rota silindi!');
   };
 
+  const loadDefaultRoutes = async () => {
+    if (!confirm('36 adet varsayılan rotayı yüklemek istediğinize emin misiniz? (Mevcut olanlar güncellenir)')) return;
+    setLoading(true);
+    for (const [to, price] of Object.entries(DEFAULT_ROUTES)) {
+      await fetch('/api/admin/routes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: 'Antalya Havalimanı', to, price, currency: 'EUR' }),
+      });
+    }
+    await fetchRoutes();
+    setLoading(false);
+    showMessage('Varsayılan rotalar yüklendi!');
+  };
+
   // Gallery
   const fetchGallery = async () => {
     const res = await fetch('/api/admin/gallery');
     const data = await res.json();
     if (Array.isArray(data)) setGalleryItems(data);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Dosya boyutu 5MB'dan büyük olamaz!");
+      return;
+    }
+
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.url) {
+        setNewGallery({ ...newGallery, url: data.url });
+        showMessage('Dosya başarıyla yüklendi, şimdi galeriye ekleyebilirsiniz.');
+      } else {
+        alert(data.error || 'Yükleme hatası');
+      }
+    } catch (err) {
+      alert('Yükleme sırasında hata oluştu.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const addGallery = async () => {
@@ -135,6 +210,7 @@ export default function AdminDashboard() {
       body: JSON.stringify(newGallery),
     });
     setNewGallery({ url: '', type: 'image' });
+    if (fileInputRef.current) fileInputRef.current.value = '';
     await fetchGallery();
     setLoading(false);
     showMessage('Galeri öğesi eklendi!');
@@ -251,12 +327,13 @@ export default function AdminDashboard() {
               <div className="space-y-4">
                 <div>
                   <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
-                    <Phone size={14} /> Telefon Numarası:
+                    <Phone size={14} /> Telefon Numarası (WhatsApp):
                   </label>
                   <input
                     type="text" value={phone} onChange={(e) => setPhone(e.target.value)}
                     className="w-full bg-secondary border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
                   />
+                  <p className="text-xs text-gray-500 mt-1">Örn: 05323591039 veya +905323591039</p>
                 </div>
                 <div>
                   <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
@@ -282,7 +359,16 @@ export default function AdminDashboard() {
           {/* Routes Tab */}
           {activeTab === 'routes' && (
             <div>
-              <h2 className="text-2xl font-bold text-white mb-6">Fiyat Listesi / Rotalar</h2>
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <h2 className="text-2xl font-bold text-white">Fiyat Listesi / Rotalar</h2>
+                <button 
+                  onClick={loadDefaultRoutes} 
+                  disabled={loading}
+                  className="mt-4 md:mt-0 text-sm bg-zinc-800 hover:bg-zinc-700 text-white py-2 px-4 rounded transition flex items-center gap-2"
+                >
+                  <Plus size={16} /> Varsayılan 36 Rotayı Yükle
+                </button>
+              </div>
 
               {/* Add new */}
               <div className="bg-secondary border border-gray-800 rounded-xl p-6 mb-8">
@@ -314,7 +400,7 @@ export default function AdminDashboard() {
                   </select>
                   <button
                     onClick={addRoute} disabled={loading}
-                    className="flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-black font-bold rounded-lg transition-colors"
+                    className="flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-black font-bold rounded-lg transition-colors py-3 md:py-0"
                   >
                     <Plus size={18} /> Ekle
                   </button>
@@ -324,21 +410,63 @@ export default function AdminDashboard() {
               {/* Route List */}
               <div className="space-y-3">
                 {routes.length === 0 && (
-                  <p className="text-gray-500 text-center py-8">Henüz rota eklenmemiş.</p>
+                  <p className="text-gray-500 text-center py-8 bg-secondary border border-gray-800 rounded-lg">Henüz rota eklenmemiş. Yukarıdan "Varsayılan 36 Rotayı Yükle" butonuna tıklayabilirsiniz.</p>
                 )}
                 {routes.map((r) => (
-                  <div key={r.id} className="bg-secondary border border-gray-800 rounded-lg p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <span className="text-gray-400 text-sm">{r.from}</span>
-                      <span className="text-gold">→</span>
-                      <span className="text-white font-medium">{r.to}</span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="text-gold font-bold">{r.price} {r.currency === 'EUR' ? '€' : r.currency === 'USD' ? '$' : r.currency === 'GBP' ? '£' : '₺'}</span>
-                      <button onClick={() => deleteRoute(r.id)} className="text-red-400 hover:text-red-300">
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
+                  <div key={r.id} className="bg-secondary border border-gray-800 rounded-lg p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                    {editingRoute?.id === r.id ? (
+                      // Inline Edit Mode
+                      <div className="w-full flex flex-col md:flex-row items-center gap-3">
+                        <input
+                          type="text" value={editingRoute.from} onChange={(e) => setEditingRoute({ ...editingRoute, from: e.target.value })}
+                          className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-2 outline-none focus:border-gold w-full md:w-auto"
+                        />
+                        <span className="hidden md:inline text-gold">→</span>
+                        <input
+                          type="text" value={editingRoute.to} onChange={(e) => setEditingRoute({ ...editingRoute, to: e.target.value })}
+                          className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-2 outline-none focus:border-gold w-full md:w-auto"
+                        />
+                        <input
+                          type="number" value={editingRoute.price} onChange={(e) => setEditingRoute({ ...editingRoute, price: parseFloat(e.target.value) })}
+                          className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-2 outline-none focus:border-gold w-full md:w-24"
+                        />
+                        <select
+                          value={editingRoute.currency} onChange={(e) => setEditingRoute({ ...editingRoute, currency: e.target.value })}
+                          className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-2 outline-none focus:border-gold w-full md:w-auto"
+                        >
+                          <option value="EUR">EUR (€)</option>
+                          <option value="USD">USD ($)</option>
+                          <option value="GBP">GBP (£)</option>
+                          <option value="TRY">TRY (₺)</option>
+                        </select>
+                        <div className="flex gap-2 w-full md:w-auto justify-end">
+                          <button onClick={saveEditedRoute} disabled={loading} className="text-green-400 hover:text-green-300 p-2 bg-green-400/10 rounded">
+                            <Save size={18} />
+                          </button>
+                          <button onClick={() => setEditingRoute(null)} className="text-gray-400 hover:text-gray-300 p-2 bg-gray-800 rounded">
+                            <X size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      // View Mode
+                      <>
+                        <div className="flex items-center gap-4 w-full md:w-auto">
+                          <span className="text-gray-400 text-sm flex-1 md:flex-none text-right md:text-left">{r.from}</span>
+                          <span className="text-gold">→</span>
+                          <span className="text-white font-medium flex-1 md:flex-none">{r.to}</span>
+                        </div>
+                        <div className="flex items-center justify-end gap-4 w-full md:w-auto">
+                          <span className="text-gold font-bold bg-gold/10 px-3 py-1 rounded">{r.price} {r.currency === 'EUR' ? '€' : r.currency === 'USD' ? '$' : r.currency === 'GBP' ? '£' : '₺'}</span>
+                          <button onClick={() => setEditingRoute(r)} className="text-blue-400 hover:text-blue-300 p-2">
+                            <Edit2 size={18} />
+                          </button>
+                          <button onClick={() => deleteRoute(r.id)} className="text-red-400 hover:text-red-300 p-2">
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>
@@ -352,27 +480,53 @@ export default function AdminDashboard() {
 
               {/* Add new */}
               <div className="bg-secondary border border-gray-800 rounded-xl p-6 mb-8">
-                <h3 className="text-lg font-semibold text-white mb-4">Yeni Görsel / Video Ekle</h3>
-                <p className="text-gray-400 text-sm mb-4">Görsel URL'si girin (Supabase Storage veya harici link). Maks. 5MB.</p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <input
-                    type="url" value={newGallery.url} onChange={(e) => setNewGallery({ ...newGallery, url: e.target.value })}
-                    placeholder="https://... görsel veya video URL"
-                    className="md:col-span-1 bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
-                  />
-                  <select
-                    value={newGallery.type} onChange={(e) => setNewGallery({ ...newGallery, type: e.target.value })}
-                    className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
-                  >
-                    <option value="image">Resim</option>
-                    <option value="video">Video</option>
-                  </select>
-                  <button
-                    onClick={addGallery} disabled={loading}
-                    className="flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-black font-bold rounded-lg transition-colors py-3"
-                  >
-                    <Plus size={18} /> Ekle
-                  </button>
+                <h3 className="text-lg font-semibold text-white mb-4">Yeni Görsel Ekle</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Option 1: File Upload */}
+                  <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-lg flex flex-col items-center justify-center text-center">
+                    <ImageIcon size={32} className="text-gray-500 mb-3" />
+                    <p className="text-sm text-gray-400 mb-4">Bilgisayardan bir görsel seçin (Maks 5MB)</p>
+                    <input 
+                      type="file" 
+                      accept="image/*,video/mp4" 
+                      className="hidden" 
+                      ref={fileInputRef}
+                      onChange={handleFileUpload}
+                    />
+                    <button 
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={loading}
+                      className="bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-2 px-4 rounded transition flex items-center gap-2"
+                    >
+                      <Upload size={16} /> Dosya Seç ve Yükle
+                    </button>
+                  </div>
+
+                  {/* Option 2: URL Input */}
+                  <div className="flex flex-col gap-3 justify-center">
+                    <p className="text-sm text-gray-400 text-center mb-1">Veya direkt URL girin (Yüklenen dosya URL'si buraya gelecektir)</p>
+                    <input
+                      type="url" value={newGallery.url} onChange={(e) => setNewGallery({ ...newGallery, url: e.target.value })}
+                      placeholder="https://... görsel URL'si"
+                      className="w-full bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
+                    />
+                    <div className="flex gap-2">
+                      <select
+                        value={newGallery.type} onChange={(e) => setNewGallery({ ...newGallery, type: e.target.value })}
+                        className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold w-1/3"
+                      >
+                        <option value="image">Resim</option>
+                        <option value="video">Video</option>
+                      </select>
+                      <button
+                        onClick={addGallery} disabled={loading || !newGallery.url}
+                        className={`flex-1 flex items-center justify-center gap-2 font-bold rounded-lg transition-colors py-3 ${newGallery.url ? 'bg-gold hover:bg-gold-light text-black' : 'bg-gray-800 text-gray-500 cursor-not-allowed'}`}
+                      >
+                        <Plus size={18} /> Galeriye Kaydet
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -382,15 +536,15 @@ export default function AdminDashboard() {
                   <p className="text-gray-500 text-center py-8 col-span-3">Henüz galeri öğesi eklenmemiş.</p>
                 )}
                 {galleryItems.map((item) => (
-                  <div key={item.id} className="bg-secondary border border-gray-800 rounded-xl overflow-hidden">
+                  <div key={item.id} className="bg-secondary border border-gray-800 rounded-xl overflow-hidden group relative">
                     {item.type === 'image' ? (
                       <img src={item.url} alt="" className="w-full h-48 object-cover" />
                     ) : (
                       <video src={item.url} className="w-full h-48 object-cover" controls preload="metadata" />
                     )}
-                    <div className="p-3 flex items-center justify-between">
-                      <span className="text-xs text-gray-400 truncate flex-1">{item.url}</span>
-                      <button onClick={() => deleteGallery(item.id)} className="text-red-400 hover:text-red-300 ml-2">
+                    <div className="p-3 flex items-center justify-between bg-zinc-900">
+                      <span className="text-xs text-gray-400 truncate flex-1">{item.url.split('/').pop()}</span>
+                      <button onClick={() => deleteGallery(item.id)} className="text-red-400 hover:text-red-300 ml-2 bg-red-400/10 p-1.5 rounded transition">
                         <Trash2 size={16} />
                       </button>
                     </div>
@@ -403,7 +557,7 @@ export default function AdminDashboard() {
           {/* Extras Tab */}
           {activeTab === 'extras' && (
             <div>
-              <h2 className="text-2xl font-bold text-white mb-6">Ekstra Hizmetler (Kutlama, İçecek vb.)</h2>
+              <h2 className="text-2xl font-bold text-white mb-6">Ekstra Hizmetler (Kutlama, Çiçek, Viski vb.)</h2>
 
               {/* Add new */}
               <div className="bg-secondary border border-gray-800 rounded-xl p-6 mb-8">
@@ -411,7 +565,7 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <input
                     type="text" value={newExtra.name} onChange={(e) => setNewExtra({ ...newExtra, name: e.target.value })}
-                    placeholder="Adı (Örn: Çiçek, Viski)"
+                    placeholder="Adı (Örn: Çiçek, Şampanya)"
                     className="col-span-1 md:col-span-2 bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
                   />
                   <input
@@ -430,7 +584,7 @@ export default function AdminDashboard() {
                   </select>
                   <button
                     onClick={addExtra} disabled={loading}
-                    className="flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-black font-bold rounded-lg transition-colors py-3"
+                    className="flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-black font-bold rounded-lg transition-colors py-3 md:py-0"
                   >
                     <Plus size={18} /> Ekle
                   </button>
@@ -453,13 +607,16 @@ export default function AdminDashboard() {
                         >
                           {ex.is_active ? 'Aktif' : 'Pasif'}
                         </button>
-                        <button onClick={() => deleteExtra(ex.id)} className="text-red-400 hover:text-red-300">
+                        <button onClick={() => deleteExtra(ex.id)} className="text-red-400 hover:text-red-300 p-1">
                           <Trash2 size={16} />
                         </button>
                       </div>
                     </div>
-                    <div className="text-gold font-bold text-lg">
-                      {ex.price} {ex.currency === 'EUR' ? '€' : ex.currency === 'USD' ? '$' : ex.currency === 'GBP' ? '£' : '₺'}
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-gray-400 text-sm">Fiyat:</span>
+                      <span className="text-gold font-bold text-lg bg-gold/10 px-3 py-1 rounded">
+                        {ex.price} {ex.currency === 'EUR' ? '€' : ex.currency === 'USD' ? '$' : ex.currency === 'GBP' ? '£' : '₺'}
+                      </span>
                     </div>
                   </div>
                 ))}
