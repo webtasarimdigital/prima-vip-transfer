@@ -78,6 +78,7 @@ export default function AdminDashboard() {
     currency: 'EUR' 
   });
   const [editingRoute, setEditingRoute] = useState<RoutePrice | null>(null);
+  const [isManualRoute, setIsManualRoute] = useState(false);
 
   // Gallery
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
@@ -139,39 +140,62 @@ export default function AdminDashboard() {
   };
 
   const addRoute = async () => {
-    if (!newRoute.to || newRoute.price <= 0) return;
+    if (!newRoute.from || !newRoute.to || newRoute.price < 0) {
+      alert('Lütfen Nereden, Nereye alanlarını ve geçerli bir fiyat giriniz.');
+      return;
+    }
     setLoading(true);
-    await fetch('/api/admin/routes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newRoute),
-    });
-    setNewRoute({ 
-      from: 'Antalya Havalimanı', 
-      to: '', 
-      price: 0, 
-      price_vito: null, 
-      price_maybach: null, 
-      price_minibus: null, 
-      currency: 'EUR' 
-    });
-    await fetchRoutes();
-    setLoading(false);
-    showMessage('Rota eklendi!');
+    try {
+      const res = await fetch('/api/admin/routes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newRoute),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert('Ekleme hatası: ' + (data.error || 'Bilinmeyen hata'));
+      } else {
+        setNewRoute({ 
+          from: 'Antalya Havalimanı', 
+          to: '', 
+          price: 0, 
+          price_vito: null, 
+          price_maybach: null, 
+          price_minibus: null, 
+          currency: 'EUR' 
+        });
+        await fetchRoutes();
+        showMessage('Rota eklendi!');
+      }
+    } catch (e: any) {
+      alert('Sistem hatası: ' + e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const saveEditedRoute = async () => {
     if (!editingRoute) return;
     setLoading(true);
-    await fetch('/api/admin/routes', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(editingRoute),
-    });
-    setEditingRoute(null);
-    await fetchRoutes();
-    setLoading(false);
-    showMessage('Rota güncellendi!');
+    try {
+      const res = await fetch('/api/admin/routes', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editingRoute),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert('Güncelleme hatası: ' + (data.error || 'Bilinmeyen hata'));
+      } else {
+        setEditingRoute(null);
+        await fetchRoutes();
+        showMessage('Rota güncellendi!');
+      }
+    } catch (e: any) {
+      alert('Sistem hatası: ' + e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const deleteRoute = async (id: number) => {
@@ -421,22 +445,53 @@ export default function AdminDashboard() {
 
               {/* Add new */}
               <div className="bg-secondary border border-gray-800 rounded-xl p-6 mb-8">
-                <h3 className="text-lg font-semibold text-white mb-4">Yeni Rota Ekle</h3>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                  <h3 className="text-lg font-semibold text-white">Yeni Rota Ekle</h3>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsManualRoute(!isManualRoute);
+                      setNewRoute(prev => ({ ...prev, from: isManualRoute ? 'Antalya Havalimanı' : '', to: '' }));
+                    }}
+                    className={`text-xs py-1.5 px-3 rounded-lg font-semibold transition-all ${
+                      isManualRoute ? 'bg-zinc-800 text-gray-400 hover:text-white' : 'bg-gold text-black'
+                    }`}
+                  >
+                    {isManualRoute ? '📋 Listeden Seç (Kolay)' : '✍️ Kendim Yazacağım (Manuel)'}
+                  </button>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                  <select
-                    value={newRoute.from} onChange={(e) => setNewRoute({ ...newRoute, from: e.target.value })}
-                    className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
-                  >
-                    <option value="" disabled>Nereden</option>
-                    {ADMIN_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
-                  </select>
-                  <select
-                    value={newRoute.to} onChange={(e) => setNewRoute({ ...newRoute, to: e.target.value })}
-                    className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
-                  >
-                    <option value="" disabled>Nereye</option>
-                    {ADMIN_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
-                  </select>
+                  {isManualRoute ? (
+                    <>
+                      <input
+                        type="text" value={newRoute.from} onChange={(e) => setNewRoute({ ...newRoute, from: e.target.value })}
+                        placeholder="Nereden (Örn: Sivas)"
+                        className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
+                      />
+                      <input
+                        type="text" value={newRoute.to} onChange={(e) => setNewRoute({ ...newRoute, to: e.target.value })}
+                        placeholder="Nereye (Örn: Belek)"
+                        className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <select
+                        value={newRoute.from} onChange={(e) => setNewRoute({ ...newRoute, from: e.target.value })}
+                        className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
+                      >
+                        <option value="" disabled>Nereden</option>
+                        {ADMIN_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                      </select>
+                      <select
+                        value={newRoute.to} onChange={(e) => setNewRoute({ ...newRoute, to: e.target.value })}
+                        className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
+                      >
+                        <option value="" disabled>Nereye</option>
+                        {ADMIN_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                      </select>
+                    </>
+                  )}
                   <input
                     type="number" value={newRoute.price} onChange={(e) => setNewRoute({ ...newRoute, price: parseFloat(e.target.value) })}
                     placeholder="Fiyat"
