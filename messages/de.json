@@ -138,7 +138,30 @@
     "summaryVehicle": "Fahrzeug",
     "summaryTotal": "Gesamtbetrag",
     "extrasTitle": "Zusatzleistungen",
-    "free": "Kostenlos"
+    "free": "Kostenlos",
+    "vehicleTypes": {
+      "sedan": "Limousine",
+      "vito": "Vito",
+      "royal": "Royal Maybach",
+      "minibus": "Minibus (14 Personen)"
+    },
+    "features": {
+      "snack": "Kostenlose Snacks",
+      "drinks": "Kalte Getr\u00e4nke",
+      "wifi": "Kostenloses WLAN",
+      "babySeat": "Kindersitz",
+      "luxuryDesign": "Luxuri\u00f6ses Interieur",
+      "noDriverContact": "Privatsph\u00e4re vom Fahrer",
+      "surprise": "\u00dcberraschungsempfang",
+      "groupTransfer": "Gruppentransfer",
+      "largeLuggage": "Gro\u00dfes Gepäckvolumen"
+    },
+    "desc": {
+      "sedan": "Unsere Luxuslimousine, ideal f\u00fcr komfortables Reisen f\u00fcr bis zu 3 Passagiere.",
+      "vito": "Ger\u00e4umiger und komfortabler Mercedes Vito VIP-Erfahrung f\u00fcr bis zu 6 Passagiere.",
+      "royal": "Royal Maybach Klasse Luxus f\u00fcr besondere Anl\u00e4sse und Gesch\u00e4ftstransfers.",
+      "minibus": "Unser ger\u00e4umiger und komfortabler Minibus f\u00fcr Gruppentransfers von bis zu 14 Personen."
+    }
   },
   "NotFound": {
     "title": "404 - Seite nicht gefunden",

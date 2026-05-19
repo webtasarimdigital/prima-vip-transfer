@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 const DEFAULT_EXTRAS = [
   { name: 'Kutlama Paketi (Balon + Süsleme)', price: 30, currency: 'EUR', is_active: true },
   { name: 'Çiçek', price: 40, currency: 'EUR', is_active: true },

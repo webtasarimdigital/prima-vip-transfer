@@ -16,16 +16,11 @@ export async function POST(req: NextRequest) {
     const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
     const filePath = `uploads/${fileName}`;
 
-    // Read the file buffer
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = new Uint8Array(arrayBuffer);
-
     // Ensure bucket exists or just try uploading
     // Supabase needs to have a bucket named 'gallery' set to public
     const { data, error } = await supabase.storage
       .from('gallery')
-      .upload(filePath, buffer, {
-        contentType: file.type,
+      .upload(filePath, file, {
         upsert: false
       });
 
@@ -37,8 +32,7 @@ export async function POST(req: NextRequest) {
         // Retry upload
         const retry = await supabase.storage
           .from('gallery')
-          .upload(filePath, buffer, {
-            contentType: file.type,
+          .upload(filePath, file, {
             upsert: false
           });
           

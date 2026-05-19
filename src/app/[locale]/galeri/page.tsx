@@ -1,6 +1,7 @@
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
+import { supabase } from '@/lib/supabase';
+import { unstable_cache } from 'next/cache';
 
 export async function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
   const t = await getTranslations({ locale, namespace: 'GalleryPage' });
@@ -10,16 +11,31 @@ export async function generateMetadata({ params: { locale } }: { params: { local
   };
 }
 
-export default function GalleryPage() {
-  const t = useTranslations('GalleryPage');
+const getCachedGallery = unstable_cache(
+  async () => {
+    const { data } = await supabase.from('gallery').select('*').order('id');
+    return data || [];
+  },
+  ['gallery-items'],
+  { revalidate: 60 }
+);
 
-  const GALLERY_ITEMS = [
-    { id: 1, src: '/prima-vip-arac.jpeg', type: 'image' as const, alt: t('imgAlt1') },
-    { id: 2, src: '/prima-vip-araclar.jpeg', type: 'image' as const, alt: t('imgAlt2') },
-    { id: 3, src: '/prima-vip-arac-ici.jpeg', type: 'image' as const, alt: t('imgAlt3') },
-    { id: 4, src: '/prima-vip-arac-ici-detay.jpeg', type: 'image' as const, alt: t('imgAlt4') },
-    { id: 5, src: '/prima-vip-tanitim.mp4', type: 'video' as const, alt: t('videoAlt') },
+export default async function GalleryPage() {
+  const t = await getTranslations('GalleryPage');
+  
+  // Default items if DB is empty
+  const DEFAULT_ITEMS = [
+    { id: 'def1', url: '/prima-vip-arac.jpeg', type: 'image' },
+    { id: 'def2', url: '/prima-vip-araclar.jpeg', type: 'image' },
+    { id: 'def3', url: '/prima-vip-arac-ici.jpeg', type: 'image' },
+    { id: 'def4', url: '/prima-vip-arac-ici-detay.jpeg', type: 'image' },
+    { id: 'def5', url: '/prima-vip-tanitim.mp4', type: 'video' },
   ];
+
+  let dbItems = await getCachedGallery();
+  if (!dbItems || dbItems.length === 0) {
+    dbItems = DEFAULT_ITEMS;
+  }
 
   return (
     <div className="pt-24 pb-20">
@@ -39,13 +55,13 @@ export default function GalleryPage() {
       <section className="py-16 bg-primary">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {GALLERY_ITEMS.map((item) => (
+            {dbItems.map((item) => (
               <div key={item.id} className="relative rounded-xl overflow-hidden border border-gray-800 hover:border-gold/50 transition-colors group">
                 {item.type === 'image' ? (
                   <div className="aspect-video relative">
                     <Image
-                      src={item.src}
-                      alt={item.alt}
+                      src={item.url}
+                      alt="Prima VIP Galeri"
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -56,7 +72,7 @@ export default function GalleryPage() {
                     preload="metadata"
                     className="w-full aspect-video object-cover"
                   >
-                    <source src={item.src} type="video/mp4" />
+                    <source src={item.url} type="video/mp4" />
                   </video>
                 )}
               </div>

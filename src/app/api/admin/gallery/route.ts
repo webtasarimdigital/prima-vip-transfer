@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 // GET all gallery items
 export async function GET() {
   const { data, error } = await supabase.from('gallery').select('*').order('id');

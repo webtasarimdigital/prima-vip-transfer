@@ -138,7 +138,30 @@
     "summaryVehicle": "Araç",
     "summaryTotal": "Toplam Tutar",
     "extrasTitle": "Ekstra Hizmetler",
-    "free": "Ücretsiz"
+    "free": "Ücretsiz",
+    "vehicleTypes": {
+      "sedan": "Sedan",
+      "vito": "Vito",
+      "royal": "Royal Maybach",
+      "minibus": "Minibüs (14 Kişi)"
+    },
+    "features": {
+      "snack": "Atıştırmalık İkramı",
+      "drinks": "Soğuk İçecek İkramı",
+      "wifi": "Ücretsiz Wi-Fi",
+      "babySeat": "Bebek Koltuğu",
+      "luxuryDesign": "Lüks Dizayn",
+      "noDriverContact": "Şoförle Konuşmak Yok",
+      "surprise": "Sürpriz Karşılama",
+      "groupTransfer": "Grup Transferi",
+      "largeLuggage": "Büyük Bagaj Kapasitesi"
+    },
+    "desc": {
+      "sedan": "3 yolcuya kadar konforlu seyahat için ideal lüks sedan aracımız.",
+      "vito": "6 yolcuya kadar geniş ve konforlu Mercedes Vito ile VIP deneyim.",
+      "royal": "Özel günler ve kurumsal transferler için Royal Maybach sınıfı lüks.",
+      "minibus": "14 kişiye kadar grup transferleri için geniş ve konforlu minibüsümüz."
+    }
   },
   "NotFound": {
     "title": "404 - Sayfa Bulunamadı",

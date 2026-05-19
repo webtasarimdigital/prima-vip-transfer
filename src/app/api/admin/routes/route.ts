@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 // GET all routes
 export async function GET() {
   const { data, error } = await supabase.from('route_price').select('*').order('id');

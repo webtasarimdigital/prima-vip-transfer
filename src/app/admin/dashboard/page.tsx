@@ -129,7 +129,7 @@ export default function AdminDashboard() {
     if (!editingRoute) return;
     setLoading(true);
     await fetch('/api/admin/routes', {
-      method: 'POST', // The endpoint uses upsert, so POST works for update if we pass ID or it matches unique constraint
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(editingRoute),
     });
