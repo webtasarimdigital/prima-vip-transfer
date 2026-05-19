@@ -86,22 +86,49 @@ const FALLBACK_BASE_PRICES: Record<string, number> = {
   'Adrasan': 95,
 };
 
-const LOCATIONS = [
-  'Antalya Merkez', 'Lara', 'Kundu', 'Kaleiçi', 'Konyaaltı',
-  'Belek', 'Boğazkent', 'Denizyaka',
-  'Kumköy', 'Gündoğdu', 'Çolaklı', 'Evrenseki', 'Side', 'Sorgun',
-  'Manavgat', 'Titreyengöl', 'Kızılot', 'Kızılağaç',
-  'Okurcalar', 'Avsallar', 'İncekum', 'Çenger',
-  'Konaklı', 'Türkler', 'Alanya', 'Mahmutlar', 'Kargıcak', 'Kestel',
-  'Beldibi', 'Göynük', 'Kemer', 'Çamyuva', 'Kiriş', 'Tekirova',
-  'Olimpos', 'Adrasan',
-];
-
 export default function ReservationPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const t = useTranslations('Booking');
   const tLoc = useTranslations('Locations');
+
+  const [locations, setLocations] = useState<string[]>([
+    'Antalya Merkez', 'Lara', 'Kundu', 'Kaleiçi', 'Konyaaltı',
+    'Belek', 'Boğazkent', 'Denizyaka',
+    'Kumköy', 'Gündoğdu', 'Çolaklı', 'Evrenseki', 'Side', 'Sorgun',
+    'Manavgat', 'Titreyengöl', 'Kızılot', 'Kızılağaç',
+    'Okurcalar', 'Avsallar', 'İncekum', 'Çenger',
+    'Konaklı', 'Türkler', 'Alanya', 'Mahmutlar', 'Kargıcak', 'Kestel',
+    'Beldibi', 'Göynük', 'Kemer', 'Çamyuva', 'Kiriş', 'Tekirova',
+    'Olimpos', 'Adrasan',
+  ]);
+
+  useEffect(() => {
+    async function loadDynamicLocations() {
+      try {
+        const res = await fetch('/api/admin/routes');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data)) {
+            const locsSet = new Set<string>();
+            data.forEach(r => {
+              if (r.from) locsSet.add(r.from.trim());
+              if (r.to) locsSet.add(r.to.trim());
+            });
+            // Antalya Havalimanı is explicitly rendered as the first option, so we filter it out of the rest
+            const filteredLocs = Array.from(locsSet)
+              .filter(l => l && l.trim() !== 'Antalya Havalimanı')
+              .map(l => l.trim())
+              .sort((a, b) => a.localeCompare(b, 'tr'));
+            setLocations(filteredLocs);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load dynamic reservation locations:', e);
+      }
+    }
+    loadDynamicLocations();
+  }, []);
 
   const VEHICLES = [
     {
@@ -282,7 +309,7 @@ export default function ReservationPage() {
                   >
                     <option value="" disabled>Seçiniz</option>
                     <option value="Antalya Havalimanı">{tLoc('antalyaAirport')}</option>
-                    {LOCATIONS.map((loc) => <option key={loc} value={loc}>{translateLocation(loc)}</option>)}
+                    {locations.map((loc) => <option key={loc} value={loc}>{translateLocation(loc)}</option>)}
                   </select>
                 </div>
 
@@ -298,7 +325,7 @@ export default function ReservationPage() {
                   >
                     <option value="" disabled>Seçiniz</option>
                     <option value="Antalya Havalimanı">{tLoc('antalyaAirport')}</option>
-                    {LOCATIONS.map((loc) => <option key={loc} value={loc}>{translateLocation(loc)}</option>)}
+                    {locations.map((loc) => <option key={loc} value={loc}>{translateLocation(loc)}</option>)}
                   </select>
                 </div>
 

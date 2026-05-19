@@ -14,7 +14,7 @@ const getCachedRoutes = unstable_cache(
     }
   },
   ['route-prices'],
-  { revalidate: 3600 }
+  { revalidate: 5 }
 );
 
 export default async function PriceList() {

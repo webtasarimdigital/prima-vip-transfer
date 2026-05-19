@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Hero() {
   const t = useTranslations('Hero');
@@ -12,6 +12,51 @@ export default function Hero() {
   const [to, setTo] = useState('');
   const [pax, setPax] = useState('1');
   const [currency, setCurrency] = useState('');
+
+  const [locations, setLocations] = useState<string[]>([
+    'Antalya Havalimanı', 'Antalya Merkez', 'Lara', 'Kundu', 'Kaleiçi', 'Konyaaltı',
+    'Belek', 'Boğazkent', 'Denizyaka',
+    'Kumköy', 'Gündoğdu', 'Çolaklı',
+    'Evrenseki', 'Side', 'Sorgun',
+    'Manavgat', 'Titreyengöl', 'Kızılot',
+    'Kızılağaç', 'Okurcalar', 'Avsallar',
+    'İncekum', 'Çenger', 'Konaklı',
+    'Türkler', 'Alanya', 'Mahmutlar',
+    'Kargıcak', 'Kestel',
+    'Beldibi', 'Göynük', 'Kemer',
+    'Çamyuva', 'Kiriş', 'Tekirova',
+    'Olimpos', 'Adrasan',
+  ]);
+
+  useEffect(() => {
+    async function loadDynamicLocations() {
+      try {
+        const res = await fetch('/api/admin/routes');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data)) {
+            const locsSet = new Set<string>();
+            data.forEach(r => {
+              if (r.from) locsSet.add(r.from.trim());
+              if (r.to) locsSet.add(r.to.trim());
+            });
+            const sortedLocs = Array.from(locsSet).sort((a, b) => a.localeCompare(b, 'tr'));
+            
+            // Keep Antalya Airport at the top as a premium choice
+            const filteredLocs = sortedLocs.filter(l => l !== 'Antalya Havalimanı');
+            if (locsSet.has('Antalya Havalimanı')) {
+              setLocations(['Antalya Havalimanı', ...filteredLocs]);
+            } else {
+              setLocations(sortedLocs);
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load dynamic search locations:', e);
+      }
+    }
+    loadDynamicLocations();
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,21 +70,6 @@ export default function Hero() {
       }
     });
   };
-
-  const locations = [
-    'Antalya Havalimanı', 'Antalya Merkez', 'Lara', 'Kundu', 'Kaleiçi', 'Konyaaltı',
-    'Belek', 'Boğazkent', 'Denizyaka',
-    'Kumköy', 'Gündoğdu', 'Çolaklı',
-    'Evrenseki', 'Side', 'Sorgun',
-    'Manavgat', 'Titreyengöl', 'Kızılot',
-    'Kızılağaç', 'Okurcalar', 'Avsallar',
-    'İncekum', 'Çenger', 'Konaklı',
-    'Türkler', 'Alanya', 'Mahmutlar',
-    'Kargıcak', 'Kestel',
-    'Beldibi', 'Göynük', 'Kemer',
-    'Çamyuva', 'Kiriş', 'Tekirova',
-    'Olimpos', 'Adrasan',
-  ];
 
   return (
     <div className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
