@@ -154,7 +154,7 @@ export default function ReservationPage() {
   const [searchPax, setSearchPax] = useState(paxRaw || '1');
   const [searchCurrency, setSearchCurrency] = useState(currencyRaw || 'EUR');
 
-  const [dbBasePrice, setDbBasePrice] = useState<number | null>(null);
+  const [dbRouteData, setDbRouteData] = useState<any | null>(null);
   const [rates, setRates] = useState<Record<string, number>>({});
   const [direction, setDirection] = useState<'one-way' | 'round-trip'>('one-way');
 
@@ -164,9 +164,9 @@ export default function ReservationPage() {
         let routeDest = toRaw;
         if (toRaw === 'Antalya Havalimanı') routeDest = fromRaw;
 
-        const { data } = await supabase.from('route_price').select('price').eq('to', routeDest).single();
+        const { data } = await supabase.from('route_price').select('*').eq('to', routeDest).single();
         if (data) {
-          setDbBasePrice(data.price);
+          setDbRouteData(data);
         }
       };
 
@@ -379,10 +379,19 @@ export default function ReservationPage() {
 
       <div className="container mx-auto px-4 lg:px-8 space-y-6">
         {filteredVehicles.map((vehicle, index) => {
-          const extraCharges = [0, 5, 10, 20];
-          const extraCharge = extraCharges[index] || 0;
+          const baseSedan = Number(dbRouteData?.price || FALLBACK_BASE_PRICES[destForInfo] || 40);
+          
+          let baseEur = baseSedan;
+          if (vehicle.id === 1) { // Sedan
+            baseEur = Number(dbRouteData?.price || baseSedan);
+          } else if (vehicle.id === 2) { // Vito
+            baseEur = dbRouteData?.price_vito !== undefined && dbRouteData?.price_vito !== null ? Number(dbRouteData.price_vito) : (baseSedan + 5);
+          } else if (vehicle.id === 3) { // Royal Maybach
+            baseEur = dbRouteData?.price_maybach !== undefined && dbRouteData?.price_maybach !== null ? Number(dbRouteData.price_maybach) : (baseSedan + 10);
+          } else if (vehicle.id === 4) { // Minibus
+            baseEur = dbRouteData?.price_minibus !== undefined && dbRouteData?.price_minibus !== null ? Number(dbRouteData.price_minibus) : (baseSedan + 20);
+          }
 
-          const baseEur = (dbBasePrice || FALLBACK_BASE_PRICES[destForInfo] || 40) + extraCharge;
           const rate = rates[currency] || 1;
           const calculatedPrice = Math.round(baseEur * rate);
 

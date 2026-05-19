@@ -4,7 +4,124 @@ import { useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { MapPin, Route, Users, Baby, Plus, Calendar, Clock, Plane, Hotel, Check } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+
+const EXTRA_TRANSLATIONS: Record<string, Record<string, string>> = {
+  'Kutlama Paketi (Balon + Süsleme)': {
+    en: 'Celebration Package (Balloon + Decoration)',
+    ru: 'Праздничный пакет (воздушные шары + оформление)',
+    de: 'Feier-Paket (Ballon + Dekoration)',
+    tr: 'Kutlama Paketi (Balon + Süsleme)'
+  },
+  'Kutlama Paketi': {
+    en: 'Celebration Package',
+    ru: 'Праздничный пакет',
+    de: 'Feier-Paket',
+    tr: 'Kutlama Paketi'
+  },
+  'Çiçek': {
+    en: 'Flowers',
+    ru: 'Цветы',
+    de: 'Blumen',
+    tr: 'Çiçek'
+  },
+  'Bira (4 Adet Efes/Tuborg)': {
+    en: 'Beer (4x Efes/Tuborg)',
+    ru: 'Пиво (4 шт Efes/Tuborg)',
+    de: 'Bier (4x Efes/Tuborg)',
+    tr: 'Bira (4 Adet Efes/Tuborg)'
+  },
+  'Bira (Efes Özel Seri 50cl)': {
+    en: 'Beer (Efes Special Edition 50cl)',
+    ru: 'Пиво (Efes Special Edition 50cl)',
+    de: 'Bier (Efes Special Edition 50cl)',
+    tr: 'Bira (Efes Özel Seri 50cl)'
+  },
+  'Meyve Tabağı (Mevsim Meyveleri)': {
+    en: 'Fruit Platter (Seasonal Fruits)',
+    ru: 'Фруктовая тарелка (сезонные фрукты)',
+    de: 'Obstteller (Saisonale Früchte)',
+    tr: 'Meyve Tabağı (Mevsim Meyveleri)'
+  },
+  'Meyve Tabağı': {
+    en: 'Fruit Platter',
+    ru: 'Фруктовая тарелка',
+    de: 'Obstteller',
+    tr: 'Meyve Tabağı'
+  },
+  'Viski (Chivas Regal 70cl + Enerji)': {
+    en: 'Whiskey (Chivas Regal 70cl + Energy Drink)',
+    ru: 'Виски (Chivas Regal 70cl + Энергетик)',
+    de: 'Whisky (Chivas Regal 70cl + Energy Drink)',
+    tr: 'Viski (Chivas Regal 70cl + Enerji)'
+  },
+  'Viski (Chivas 35cl)': {
+    en: 'Whiskey (Chivas 35cl)',
+    ru: 'Виски (Chivas 35cl)',
+    de: 'Whisky (Chivas 35cl)',
+    tr: 'Viski (Chivas 35cl)'
+  },
+  'Vodka (Absolut 70cl + Enerji)': {
+    en: 'Vodka (Absolut 70cl + Energy Drink)',
+    ru: 'Водка (Absolut 70cl + Энергетик)',
+    de: 'Wodka (Absolut 70cl + Energy Drink)',
+    tr: 'Vodka (Absolut 70cl + Enerji)'
+  },
+  'Vodka (Absolute 35cl)': {
+    en: 'Vodka (Absolut 35cl)',
+    ru: 'Водка (Absolut 35cl)',
+    de: 'Wodka (Absolut 35cl)',
+    tr: 'Vodka (Absolute 35cl)'
+  },
+  'Şampanya': {
+    en: 'Champagne',
+    ru: 'Шампанское',
+    de: 'Champagner',
+    tr: 'Şampanya'
+  },
+  'Şampanya / Şarap (70cl)': {
+    en: 'Champagne / Wine (70cl)',
+    ru: 'Шампанское / Вино (70cl)',
+    de: 'Champagner / Wein (70cl)',
+    tr: 'Şampanya / Şarap (70cl)'
+  },
+  'Redbull (4 Adet)': {
+    en: 'Redbull (4 pieces)',
+    ru: 'Редбулл (4 шт.)',
+    de: 'Redbull (4 Stück)',
+    tr: 'Redbull (4 Adet)'
+  },
+  'Redbul': {
+    en: 'Redbull',
+    ru: 'Редбулл',
+    de: 'Redbull',
+    tr: 'Redbul'
+  },
+  'Baby Seat (Free)': {
+    en: 'Baby Seat (Free)',
+    ru: 'Детское кресло (Бесплатно)',
+    de: 'Babyautositz (Kostenlos)',
+    tr: 'Bebek Koltuğu (Ücretsiz)'
+  }
+};
+
+const translateExtraName = (name: string, locale: string) => {
+  if (!name) return '';
+  const cleanName = name.trim();
+  const entry = EXTRA_TRANSLATIONS[cleanName];
+  if (entry && entry[locale]) {
+    return entry[locale];
+  }
+  
+  // Fuzzy match if name has similar words
+  for (const [key, value] of Object.entries(EXTRA_TRANSLATIONS)) {
+    if (cleanName.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(cleanName.toLowerCase())) {
+      if (value[locale]) return value[locale];
+    }
+  }
+  
+  return name;
+};
 
 const VEHICLE_IMAGES: Record<string, string> = {
   '1': '/prima-vip-arac.jpeg',
@@ -74,6 +191,7 @@ export default function ReservationStep2() {
   const t = useTranslations('Booking');
   const tLoc = useTranslations('Locations');
   const searchParams = useSearchParams();
+  const currentLocale = useLocale();
 
   const fromRaw = searchParams.get('from') || '';
   const toRaw = searchParams.get('to') || '';
@@ -198,7 +316,7 @@ export default function ReservationStep2() {
       .map(ex => {
         const qty = selectedExtras[ex.id];
         const convertedPrice = getConvertedExtraPrice(ex);
-        return `${qty}x ${ex.name} (${convertedPrice * qty} ${currencySymbol[currency] || '€'})`;
+        return `${qty}x ${translateExtraName(ex.name, currentLocale)} (${convertedPrice * qty} ${currencySymbol[currency] || '€'})`;
       })
       .join('%0A');
 
@@ -378,7 +496,7 @@ export default function ReservationStep2() {
                         return (
                           <div key={extra.id} className="bg-secondary border border-gray-700 rounded-lg p-4 flex flex-col justify-between hover:border-gold/30 transition-colors">
                             <div className="mb-4">
-                              <h4 className="text-white font-medium">{extra.name}</h4>
+                              <h4 className="text-white font-medium">{translateExtraName(extra.name, currentLocale)}</h4>
                               <span className="text-gold font-bold text-lg">{convertedPrice} {currencySymbol[currency] || '€'}</span>
                             </div>
                             <select

@@ -91,7 +91,15 @@ export async function POST(req: NextRequest) {
 
     const { data, error } = await supabase
       .from('route_price')
-      .insert({ from: body.from, to: body.to, price: body.price, currency: body.currency || 'EUR' })
+      .insert({ 
+        from: body.from, 
+        to: body.to, 
+        price: body.price, 
+        price_vito: body.price_vito,
+        price_maybach: body.price_maybach,
+        price_minibus: body.price_minibus,
+        currency: body.currency || 'EUR' 
+      })
       .select()
       .single();
 
@@ -108,7 +116,15 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
     const { data, error } = await supabase
       .from('route_price')
-      .update({ from: body.from, to: body.to, price: body.price, currency: body.currency })
+      .update({ 
+        from: body.from, 
+        to: body.to, 
+        price: body.price, 
+        price_vito: body.price_vito,
+        price_maybach: body.price_maybach,
+        price_minibus: body.price_minibus,
+        currency: body.currency 
+      })
       .eq('id', body.id)
       .select()
       .single();

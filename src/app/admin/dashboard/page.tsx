@@ -10,6 +10,9 @@ interface RoutePrice {
   from: string;
   to: string;
   price: number;
+  price_vito?: number | null;
+  price_maybach?: number | null;
+  price_minibus?: number | null;
   currency: string;
 }
 
@@ -50,7 +53,15 @@ export default function AdminDashboard() {
 
   // Routes
   const [routes, setRoutes] = useState<RoutePrice[]>([]);
-  const [newRoute, setNewRoute] = useState({ from: 'Antalya Havalimanı', to: '', price: 0, currency: 'EUR' });
+  const [newRoute, setNewRoute] = useState({ 
+    from: 'Antalya Havalimanı', 
+    to: '', 
+    price: 0, 
+    price_vito: null as number | null, 
+    price_maybach: null as number | null, 
+    price_minibus: null as number | null, 
+    currency: 'EUR' 
+  });
   const [editingRoute, setEditingRoute] = useState<RoutePrice | null>(null);
 
   // Gallery
@@ -120,7 +131,15 @@ export default function AdminDashboard() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newRoute),
     });
-    setNewRoute({ from: 'Antalya Havalimanı', to: '', price: 0, currency: 'EUR' });
+    setNewRoute({ 
+      from: 'Antalya Havalimanı', 
+      to: '', 
+      price: 0, 
+      price_vito: null, 
+      price_maybach: null, 
+      price_minibus: null, 
+      currency: 'EUR' 
+    });
     await fetchRoutes();
     setLoading(false);
     showMessage('Rota eklendi!');
@@ -428,59 +447,120 @@ export default function AdminDashboard() {
                   <p className="text-gray-500 text-center py-8 bg-secondary border border-gray-800 rounded-lg">Henüz rota eklenmemiş. Yukarıdan "Varsayılan 36 Rotayı Yükle" butonuna tıklayabilirsiniz.</p>
                 )}
                 {routes.map((r) => (
-                  <div key={r.id} className="bg-secondary border border-gray-800 rounded-lg p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div key={r.id} className="bg-secondary border border-gray-800 rounded-lg p-4 flex flex-col items-center gap-4">
                     {editingRoute?.id === r.id ? (
                       // Inline Edit Mode
-                      <div className="w-full flex flex-col md:flex-row items-center gap-3">
-                        <input
-                          type="text" value={editingRoute.from} onChange={(e) => setEditingRoute({ ...editingRoute, from: e.target.value })}
-                          className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-2 outline-none focus:border-gold w-full md:w-auto"
-                        />
-                        <span className="hidden md:inline text-gold">→</span>
-                        <input
-                          type="text" value={editingRoute.to} onChange={(e) => setEditingRoute({ ...editingRoute, to: e.target.value })}
-                          className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-2 outline-none focus:border-gold w-full md:w-auto"
-                        />
-                        <input
-                          type="number" value={editingRoute.price} onChange={(e) => setEditingRoute({ ...editingRoute, price: parseFloat(e.target.value) })}
-                          className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-2 outline-none focus:border-gold w-full md:w-24"
-                        />
-                        <select
-                          value={editingRoute.currency} onChange={(e) => setEditingRoute({ ...editingRoute, currency: e.target.value })}
-                          className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-2 outline-none focus:border-gold w-full md:w-auto"
-                        >
-                          <option value="EUR">EUR (€)</option>
-                          <option value="USD">USD ($)</option>
-                          <option value="GBP">GBP (£)</option>
-                          <option value="TRY">TRY (₺)</option>
-                        </select>
-                        <div className="flex gap-2 w-full md:w-auto justify-end">
-                          <button onClick={saveEditedRoute} disabled={loading} className="text-green-400 hover:text-green-300 p-2 bg-green-400/10 rounded">
-                            <Save size={18} />
+                      <div className="w-full flex flex-col gap-4">
+                        <div className="flex flex-col md:flex-row items-center gap-3">
+                          <div className="flex flex-col gap-1 w-full md:flex-1">
+                            <span className="text-xs text-gray-500 font-medium">Nereden</span>
+                            <input
+                              type="text" value={editingRoute.from} onChange={(e) => setEditingRoute({ ...editingRoute, from: e.target.value })}
+                              className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-2.5 outline-none focus:border-gold w-full text-sm"
+                            />
+                          </div>
+                          <span className="hidden md:inline text-gold self-end mb-3">→</span>
+                          <div className="flex flex-col gap-1 w-full md:flex-1">
+                            <span className="text-xs text-gray-500 font-medium">Nereye</span>
+                            <input
+                              type="text" value={editingRoute.to} onChange={(e) => setEditingRoute({ ...editingRoute, to: e.target.value })}
+                              className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-2.5 outline-none focus:border-gold w-full text-sm"
+                            />
+                          </div>
+                          <div className="flex flex-col gap-1 w-full md:w-32">
+                            <span className="text-xs text-gray-500 font-medium">Para Birimi</span>
+                            <select
+                              value={editingRoute.currency} onChange={(e) => setEditingRoute({ ...editingRoute, currency: e.target.value })}
+                              className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-2.5 outline-none focus:border-gold w-full text-sm"
+                            >
+                              <option value="EUR">EUR (€)</option>
+                              <option value="USD">USD ($)</option>
+                              <option value="GBP">GBP (£)</option>
+                              <option value="TRY">TRY (₺)</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Vehicle specific prices */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-zinc-900/50 p-3 rounded-lg border border-zinc-800 w-full">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs text-gray-400 font-semibold">Sedan Fiyatı</span>
+                            <input
+                              type="number" 
+                              value={editingRoute.price || ''} 
+                              onChange={(e) => setEditingRoute({ ...editingRoute, price: parseFloat(e.target.value) || 0 })}
+                              placeholder="Fiyat"
+                              className="bg-secondary border border-gray-700 text-white rounded-lg p-2 outline-none focus:border-gold text-sm"
+                            />
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs text-gray-400 font-semibold">Vito (Boşsa Sedan + 5)</span>
+                            <input
+                              type="number" 
+                              value={editingRoute.price_vito !== undefined && editingRoute.price_vito !== null ? editingRoute.price_vito : ''} 
+                              onChange={(e) => setEditingRoute({ ...editingRoute, price_vito: e.target.value === '' ? null : parseFloat(e.target.value) })}
+                              placeholder="Otomatik (+5)"
+                              className="bg-secondary border border-gray-700 text-white rounded-lg p-2 outline-none focus:border-gold text-sm"
+                            />
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs text-gray-400 font-semibold">Maybach (Boşsa Sedan + 10)</span>
+                            <input
+                              type="number" 
+                              value={editingRoute.price_maybach !== undefined && editingRoute.price_maybach !== null ? editingRoute.price_maybach : ''} 
+                              onChange={(e) => setEditingRoute({ ...editingRoute, price_maybach: e.target.value === '' ? null : parseFloat(e.target.value) })}
+                              placeholder="Otomatik (+10)"
+                              className="bg-secondary border border-gray-700 text-white rounded-lg p-2 outline-none focus:border-gold text-sm"
+                            />
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs text-gray-400 font-semibold">Minibus (Boşsa Sedan + 20)</span>
+                            <input
+                              type="number" 
+                              value={editingRoute.price_minibus !== undefined && editingRoute.price_minibus !== null ? editingRoute.price_minibus : ''} 
+                              onChange={(e) => setEditingRoute({ ...editingRoute, price_minibus: e.target.value === '' ? null : parseFloat(e.target.value) })}
+                              placeholder="Otomatik (+20)"
+                              className="bg-secondary border border-gray-700 text-white rounded-lg p-2 outline-none focus:border-gold text-sm"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2 justify-end w-full mt-1">
+                          <button onClick={saveEditedRoute} disabled={loading} className="flex items-center gap-1.5 text-green-400 hover:text-green-300 py-2 px-4 bg-green-400/10 rounded text-sm font-semibold transition-all">
+                            <Save size={16} /> Kaydet
                           </button>
-                          <button onClick={() => setEditingRoute(null)} className="text-gray-400 hover:text-gray-300 p-2 bg-gray-800 rounded">
-                            <X size={18} />
+                          <button onClick={() => setEditingRoute(null)} className="flex items-center gap-1.5 text-gray-400 hover:text-gray-300 py-2 px-4 bg-gray-800 rounded text-sm transition-all">
+                            <X size={16} /> İptal
                           </button>
                         </div>
                       </div>
                     ) : (
                       // View Mode
-                      <>
-                        <div className="flex items-center gap-4 w-full md:w-auto">
-                          <span className="text-gray-400 text-sm flex-1 md:flex-none text-right md:text-left">{r.from}</span>
-                          <span className="text-gold">→</span>
-                          <span className="text-white font-medium flex-1 md:flex-none">{r.to}</span>
+                      <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="flex flex-col gap-2 w-full md:w-auto">
+                          <div className="flex items-center gap-3">
+                            <span className="text-gray-400 text-sm font-medium">{r.from}</span>
+                            <span className="text-gold">→</span>
+                            <span className="text-white font-bold text-base">{r.to}</span>
+                          </div>
+                          
+                          <div className="flex flex-wrap items-center gap-2 mt-1">
+                            <span className="text-xs bg-zinc-900 border border-zinc-800 text-gray-400 px-2 py-1 rounded">Sedan: <strong className="text-gold font-bold">{r.price} €</strong></span>
+                            <span className="text-xs bg-zinc-900 border border-zinc-800 text-gray-400 px-2 py-1 rounded">Vito: <strong className="text-gold font-bold">{r.price_vito !== undefined && r.price_vito !== null ? r.price_vito : r.price + 5} €</strong></span>
+                            <span className="text-xs bg-zinc-900 border border-zinc-800 text-gray-400 px-2 py-1 rounded">Maybach: <strong className="text-gold font-bold">{r.price_maybach !== undefined && r.price_maybach !== null ? r.price_maybach : r.price + 10} €</strong></span>
+                            <span className="text-xs bg-zinc-900 border border-zinc-800 text-gray-400 px-2 py-1 rounded">Minibüs: <strong className="text-gold font-bold">{r.price_minibus !== undefined && r.price_minibus !== null ? r.price_minibus : r.price + 20} €</strong></span>
+                          </div>
                         </div>
-                        <div className="flex items-center justify-end gap-4 w-full md:w-auto">
-                          <span className="text-gold font-bold bg-gold/10 px-3 py-1 rounded">{r.price} {r.currency === 'EUR' ? '€' : r.currency === 'USD' ? '$' : r.currency === 'GBP' ? '£' : '₺'}</span>
-                          <button onClick={() => setEditingRoute(r)} className="text-blue-400 hover:text-blue-300 p-2">
+                        
+                        <div className="flex items-center justify-end gap-2 w-full md:w-auto shrink-0">
+                          <button onClick={() => setEditingRoute(r)} className="text-blue-400 hover:text-blue-300 p-2 bg-blue-400/5 rounded hover:bg-blue-400/10 transition-all">
                             <Edit2 size={18} />
                           </button>
-                          <button onClick={() => deleteRoute(r.id)} className="text-red-400 hover:text-red-300 p-2">
+                          <button onClick={() => deleteRoute(r.id)} className="text-red-400 hover:text-red-300 p-2 bg-red-400/5 rounded hover:bg-red-400/10 transition-all">
                             <Trash2 size={18} />
                           </button>
                         </div>
-                      </>
+                      </div>
                     )}
                   </div>
                 ))}
