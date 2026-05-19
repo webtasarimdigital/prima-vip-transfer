@@ -16,10 +16,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Dosya boyutu 5MB\'dan büyük olamaz!' }, { status: 400 });
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vkwzxezehrkhombjorvo.supabase.co';
     // Use service role key if available (bypasses RLS for uploads)
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY 
-      || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
+      || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY 
+      || 'sb_publishable_9oc_GA_4A2SIkJSengCU_Q_Ed_09K0_';
     
     const supabase = createClient(supabaseUrl, supabaseKey);
 
