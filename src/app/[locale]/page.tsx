@@ -25,11 +25,11 @@ export default function Home() {
               <Award size={18} className="animate-pulse" /> PRİMA VIP TRANSFER
             </h2>
             <h1 className="text-3xl md:text-5xl font-extrabold text-white uppercase tracking-wider inline-block relative pb-4">
-              Neden Bizi Seçmelisiniz ?
+              {t('aboutTitle')}
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-[3px] bg-gold rounded-full"></div>
             </h1>
             <p className="text-zinc-400 text-base md:text-lg leading-relaxed mt-6">
-              Antalya'nın en prestijli VIP transfer servisi olarak, seyahatinizin her anını kusursuz ve konforlu kılmak için çalışıyoruz.
+              {t('aboutText')}
             </p>
           </div>
 
@@ -57,7 +57,7 @@ export default function Home() {
                 </div>
                 <div>
                   <div className="text-2xl font-black text-white">10k+</div>
-                  <div className="text-xs text-zinc-500 font-bold tracking-wider uppercase">Mutlu Müşteri</div>
+                  <div className="text-xs text-zinc-500 font-bold tracking-wider uppercase">{t('stat1Label')}</div>
                 </div>
               </div>
 
@@ -67,8 +67,8 @@ export default function Home() {
                   <Clock className="text-gold animate-spin-slow" size={24} />
                 </div>
                 <div>
-                  <div className="text-lg font-black text-white">7/24 Aktif</div>
-                  <div className="text-xs text-zinc-500 font-bold tracking-wider uppercase">Canlı Rezervasyon</div>
+                  <div className="text-lg font-black text-white">{t('stat2Value')}</div>
+                  <div className="text-xs text-zinc-500 font-bold tracking-wider uppercase">{t('stat2Label')}</div>
                 </div>
               </div>
             </div>
@@ -83,10 +83,10 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="text-lg md:text-xl font-bold text-white mb-2 tracking-wide group-hover:text-gold transition-colors flex items-center gap-2">
-                    Maksimum Güvenlik & Hijyen
+                    {t('feature1Title')}
                   </h3>
                   <p className="text-zinc-400 text-sm leading-relaxed">
-                    Tüm araçlarımız her transfer öncesinde tamamen dezenfekte edilerek sterilize edilir. Deneyimli, ileri sürüş teknikleri eğitimi almış profesyonel kaptanlarımızla güvenli yolculuğun tadını çıkarın.
+                    {t('feature1Desc')}
                   </p>
                 </div>
               </div>
@@ -98,10 +98,10 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="text-lg md:text-xl font-bold text-white mb-2 tracking-wide group-hover:text-gold transition-colors">
-                    Kişiselleştirilmiş Lüks & Konfor
+                    {t('feature2Title')}
                   </h3>
                   <p className="text-zinc-400 text-sm leading-relaxed">
-                    Ultra lüks donanımlı Maybach ve Vito araçlarımızda ücretsiz yüksek hızlı Wi-Fi, Apple TV, kaliteli ses sistemleri, premium atıştırmalıklar, soğuk içecek ikramları ve bebek koltuğu standart olarak sunulur.
+                    {t('feature2Desc')}
                   </p>
                 </div>
               </div>
@@ -113,10 +113,10 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="text-lg md:text-xl font-bold text-white mb-2 tracking-wide group-hover:text-gold transition-colors">
-                    Uçuş Takip & Kesintisiz Zamanlama
+                    {t('feature3Title')}
                   </h3>
                   <p className="text-zinc-400 text-sm leading-relaxed">
-                    Uçağınız rötar yapsa bile uçuş kodunuz üzerinden anlık takip yapıyor, siz havalimanına indiğiniz anda kapıda hazır bekliyoruz. Ek ücret talep etmeden, zaman kaybı yaşatmadan konforlu bir karşılama sunuyoruz.
+                    {t('feature3Desc')}
                   </p>
                 </div>
               </div>
@@ -124,6 +124,7 @@ export default function Home() {
             </div>
 
           </div>
+
         </div>
       </section>
 
@@ -139,12 +140,13 @@ export default function Home() {
           
           {/* Section Header */}
           <div className="text-center mb-20">
-            <h2 className="text-sm font-bold text-gold tracking-[0.25em] uppercase mb-3">MÜŞTERİ DENEYİMLERİ</h2>
+            <h2 className="text-sm font-bold text-gold tracking-[0.25em] uppercase mb-3">{t('reviewsSub')}</h2>
             <h1 className="text-3xl md:text-4xl font-extrabold text-white uppercase tracking-wider inline-block relative pb-4">
-              Bizimle Seyahat Edenler Ne Diyor?
+              {t('reviewsTitle')}
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-[2px] bg-gold"></div>
             </h1>
           </div>
+
           
           {/* Glowing Review Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

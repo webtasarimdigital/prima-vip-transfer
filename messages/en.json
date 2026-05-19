@@ -18,14 +18,32 @@
   },
   "Home": {
     "aboutTitle": "Why Choose Us?",
-    "aboutText": "With years of experience, we provide premium VIP transfer services in Antalya. We turn your journey into a pleasure with our luxury vehicles and professional drivers.",
+    "aboutText": "As Antalya's most prestigious VIP transfer service, we work to make every moment of your journey flawless and comfortable.",
+    "feature1Title": "Maximum Safety & Hygiene",
+    "feature1Desc": "All our vehicles are completely disinfected and sterilized before each transfer. Enjoy a safe journey with our experienced captains trained in advanced driving techniques.",
+    "feature2Title": "Personalized Luxury & Comfort",
+    "feature2Desc": "Free high-speed Wi-Fi, Apple TV, high-quality sound systems, premium snacks, cold soft drinks, and baby seats are offered as standard in our ultra-luxurious Maybach and Vito vehicles.",
+    "feature3Title": "Flight Tracking & Seamless Timing",
+    "feature3Desc": "Even if your flight is delayed, we track it in real-time using your flight code, and we are ready at the gate as soon as you land. We offer a comfortable welcome without extra fees or time loss.",
+    "stat1Label": "Happy Customers",
+    "stat2Label": "Live Reservation",
+    "stat2Value": "24/7 Active",
     "priceListTitle": "Price List",
-    "reviewsTitle": "Customer Reviews"
+    "reviewsTitle": "What Do Our Travelers Say?",
+    "reviewsSub": "CUSTOMER EXPERIENCES"
   },
   "Currencies": {
     "EUR": "EUR (€)",
     "USD": "USD ($)",
     "GBP": "GBP (£)",
     "TRY": "TRY (₺)"
+  },
+  "Footer": {
+    "desc": "Antalya's leading VIP transfer service. We make your travels unforgettable by combining comfort, safety, and luxury.",
+    "menuTitle": "Menu",
+    "contactTitle": "Contact",
+    "copyright": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions"
   }
 }

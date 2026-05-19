@@ -104,9 +104,10 @@ export default function ReservationStep2() {
     babyChair: false,
   });
 
-  const [extras, setExtras] = useState<ExtraService[]>([]);
+   const [extras, setExtras] = useState<ExtraService[]>([]);
   const [selectedExtras, setSelectedExtras] = useState<Record<number, number>>({});
   const [rates, setRates] = useState<Record<string, number>>({ EUR: 1, USD: 1.08, GBP: 0.85, TRY: 53.0 });
+  const [settingsPhone, setSettingsPhone] = useState('05323591039');
 
   useEffect(() => {
     // Fetch live currency rates
@@ -118,6 +119,17 @@ export default function ReservationStep2() {
         }
       })
       .catch((err) => console.error('Döviz kuru yüklenemedi:', err));
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/admin/settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.phone) {
+          setSettingsPhone(data.phone);
+        }
+      })
+      .catch(err => console.error('Ayarlar yüklenemedi:', err));
   }, []);
 
   useEffect(() => {
@@ -198,7 +210,16 @@ export default function ReservationStep2() {
       `💰 *TOPLAM FİYAT:* ${finalPrice} ${currencySymbol[currency] || '€'}%0A%0A` +
       `${form.note ? `💬 *Not:* ${form.note}` : ''}`;
 
-    const waNumber = '905323591039';
+    // Clean and format settingsPhone for WhatsApp
+    let waNumber = settingsPhone.replace(/\D/g, '');
+    if (waNumber.startsWith('00')) {
+      waNumber = waNumber.substring(2);
+    } else if (waNumber.startsWith('0')) {
+      waNumber = '90' + waNumber.substring(1);
+    } else if (!waNumber.startsWith('90') && waNumber.length === 10) {
+      waNumber = '90' + waNumber;
+    }
+
     window.open(`https://wa.me/${waNumber}?text=${message}`, '_blank');
   };
 

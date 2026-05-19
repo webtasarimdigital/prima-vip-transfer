@@ -18,14 +18,32 @@
   },
   "Home": {
     "aboutTitle": "Neden Bizi Seçmelisiniz?",
-    "aboutText": "Yılların tecrübesiyle Antalya'da premium VIP transfer hizmeti sunuyoruz. Lüks araçlarımız ve profesyonel şoförlerimizle yolculuğunuzu keyfe dönüştürüyoruz.",
+    "aboutText": "Antalya'nın en prestijli VIP transfer servisi olarak, seyahatinizin her anını kusursuz ve konforlu kılmak için çalışıyoruz.",
+    "feature1Title": "Maksimum Güvenlik & Hijyen",
+    "feature1Desc": "Tüm araçlarımız her transfer öncesinde tamamen dezenfekte edilerek sterilize edilir. Deneyimli, ileri sürüş teknikleri eğitimi almış profesyonel kaptanlarımızla güvenli yolculuğun tadını çıkarın.",
+    "feature2Title": "Kişiselleştirilmiş Lüks & Konfor",
+    "feature2Desc": "Ultra lüks donanımlı Maybach ve Vito araçlarımızda ücretsiz yüksek hızlı Wi-Fi, Apple TV, kaliteli ses sistemleri, premium atıştırmalıklar, soğuk içecek ikramları ve bebek koltuğu standart olarak sunulur.",
+    "feature3Title": "Uçuş Takip & Kesintisiz Zamanlama",
+    "feature3Desc": "Uçağınız rötar yapsa bile uçuş kodunuz üzerinden anlık takip yapıyor, siz havalimanına indiğiniz anda kapıda hazır bekliyoruz. Ek ücret talep etmeden, zaman kaybı yaşatmadan konforlu bir karşılama sunuyoruz.",
+    "stat1Label": "Mutlu Müşteri",
+    "stat2Label": "Canlı Rezervasyon",
+    "stat2Value": "7/24 Aktif",
     "priceListTitle": "Fiyat Listesi",
-    "reviewsTitle": "Müşteri Yorumları"
+    "reviewsTitle": "Bizimle Seyahat Edenler Ne Diyor?",
+    "reviewsSub": "MÜŞTERİ DENEYİMLERİ"
   },
   "Currencies": {
     "EUR": "EUR (€)",
     "USD": "USD ($)",
     "GBP": "GBP (£)",
     "TRY": "TRY (₺)"
+  },
+  "Footer": {
+    "desc": "Antalya'nın önde gelen VIP transfer hizmeti. Konfor, güvenlik ve lüksü bir araya getirerek seyahatlerinizi unutulmaz kılıyoruz.",
+    "menuTitle": "Menü",
+    "contactTitle": "İletişim",
+    "copyright": "Tüm hakları saklıdır.",
+    "privacy": "Gizlilik Politikası",
+    "terms": "Şartlar & Koşullar"
   }
 }

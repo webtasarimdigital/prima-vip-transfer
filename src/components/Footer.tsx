@@ -3,7 +3,8 @@ import { Link } from '@/i18n/routing';
 import { Phone, Mail, MapPin } from 'lucide-react';
 
 export default function Footer({ phone, email }: { phone: string, email: string }) {
-  const t = useTranslations('Navigation');
+  const tNav = useTranslations('Navigation');
+  const tFooter = useTranslations('Footer');
   
   return (
     <footer className="bg-primary border-t border-gold/20 pt-16 pb-24 md:pb-8">
@@ -16,7 +17,7 @@ export default function Footer({ phone, email }: { phone: string, email: string 
               <img src="/prima-vip-logo.png" alt="Prima VIP Transfer" className="h-12 md:h-16 w-auto object-contain" />
             </Link>
             <p className="text-gray-400 leading-relaxed mb-6">
-              Antalya'nın önde gelen VIP transfer hizmeti. Konfor, güvenlik ve lüksü bir araya getirerek seyahatlerinizi unutulmaz kılıyoruz.
+              {tFooter('desc')}
             </p>
             <div className="flex gap-4">
               <a href="#" className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-gray-300 hover:bg-gold hover:text-black transition-colors">
@@ -30,19 +31,19 @@ export default function Footer({ phone, email }: { phone: string, email: string 
 
           {/* Links */}
           <div>
-            <h3 className="text-xl font-semibold text-white mb-6 uppercase tracking-wider">Menü</h3>
+            <h3 className="text-xl font-semibold text-white mb-6 uppercase tracking-wider">{tFooter('menuTitle')}</h3>
             <ul className="space-y-4">
-              <li><Link href="/" className="text-gray-400 hover:text-gold transition-colors">{t('home')}</Link></li>
-              <li><Link href="/hakkimizda" className="text-gray-400 hover:text-gold transition-colors">{t('about')}</Link></li>
-              <li><Link href="/rezervasyon" className="text-gray-400 hover:text-gold transition-colors">{t('reservation')}</Link></li>
-              <li><Link href="/galeri" className="text-gray-400 hover:text-gold transition-colors">{t('gallery')}</Link></li>
-              <li><Link href="/iletisim" className="text-gray-400 hover:text-gold transition-colors">{t('contact')}</Link></li>
+              <li><Link href="/" className="text-gray-400 hover:text-gold transition-colors">{tNav('home')}</Link></li>
+              <li><Link href="/hakkimizda" className="text-gray-400 hover:text-gold transition-colors">{tNav('about')}</Link></li>
+              <li><Link href="/rezervasyon" className="text-gray-400 hover:text-gold transition-colors">{tNav('reservation')}</Link></li>
+              <li><Link href="/galeri" className="text-gray-400 hover:text-gold transition-colors">{tNav('gallery')}</Link></li>
+              <li><Link href="/iletisim" className="text-gray-400 hover:text-gold transition-colors">{tNav('contact')}</Link></li>
             </ul>
           </div>
 
           {/* Contact */}
           <div>
-            <h3 className="text-xl font-semibold text-white mb-6 uppercase tracking-wider">İletişim</h3>
+            <h3 className="text-xl font-semibold text-white mb-6 uppercase tracking-wider">{tFooter('contactTitle')}</h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-4">
                 <MapPin className="text-gold mt-1" size={20} />
@@ -63,11 +64,11 @@ export default function Footer({ phone, email }: { phone: string, email: string 
         
         <div className="border-t border-secondary pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-gray-500 text-sm">
-            &copy; {new Date().getFullYear()} Prima VIP Transfer. Tüm hakları saklıdır.
+            &copy; {new Date().getFullYear()} Prima VIP Transfer. {tFooter('copyright')}
           </p>
           <div className="flex gap-4">
-            <Link href="/hakkimizda" className="text-gray-500 hover:text-gold text-sm">Gizlilik Politikası</Link>
-            <Link href="/hakkimizda" className="text-gray-500 hover:text-gold text-sm">Şartlar & Koşullar</Link>
+            <Link href="/hakkimizda" className="text-gray-500 hover:text-gold text-sm">{tFooter('privacy')}</Link>
+            <Link href="/hakkimizda" className="text-gray-500 hover:text-gold text-sm">{tFooter('terms')}</Link>
           </div>
         </div>
       </div>

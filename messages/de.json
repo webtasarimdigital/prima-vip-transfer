@@ -18,14 +18,32 @@
   },
   "Home": {
     "aboutTitle": "Warum Uns Wählen?",
-    "aboutText": "Mit jahrelanger Erfahrung bieten wir erstklassige VIP-Transferdienste in Antalya. Mit unseren luxuriösen Fahrzeugen und professionellen Fahrern wird Ihre Reise zum Vergnügen.",
+    "aboutText": "Als Antalyas renommiertester VIP-Transferdienst setzen wir alles daran, jede Sekunde Ihrer Reise makellos und komfortabel zu gestalten.",
+    "feature1Title": "Maximale Sicherheit & Hygiene",
+    "feature1Desc": "Alle unsere Fahrzeuge werden vor jedem Transfer komplett desinfiziert und sterilisiert. Genießen Sie eine sichere Fahrt mit unseren erfahrenen Chauffeuren, die in fortgeschrittenen Fahrtechniken geschult sind.",
+    "feature2Title": "Personalisierter Luxus & Komfort",
+    "feature2Desc": "Kostenloses Highspeed-WLAN, Apple TV, hochwertige Soundsysteme, Premium-Snacks, kalte Erfrischungsgetränke und Kindersitze gehören in unseren ultraluxuriösen Maybach- und Vito-Fahrzeugen zum Standard.",
+    "feature3Title": "Flugverfolgung & Nahtloses Timing",
+    "feature3Desc": "Auch bei Flugverspätungen verfolgen wir Ihren Flug anhand Ihrer Flugnummer in Echtzeit und stehen direkt nach Ihrer Landung am Ausgang für Sie bereit. Wir bieten einen komfortablen Empfang ohne zusätzliche Gebühren oder Zeitverlust.",
+    "stat1Label": "Zufriedene Kunden",
+    "stat2Label": "Live-Reservierung",
+    "stat2Value": "24/7 Aktiv",
     "priceListTitle": "Preisliste",
-    "reviewsTitle": "Kundenbewertungen"
+    "reviewsTitle": "Was sagen unsere Reisenden?",
+    "reviewsSub": "KUNDENBEWERTUNGEN"
   },
   "Currencies": {
     "EUR": "EUR (€)",
     "USD": "USD ($)",
     "GBP": "GBP (£)",
     "TRY": "TRY (₺)"
+  },
+  "Footer": {
+    "desc": "Antalyas führender VIP-Transferdienst. Wir machen Ihre Reisen unvergesslich, indem wir Komfort, Sicherheit und Luxus verbinden.",
+    "menuTitle": "Menü",
+    "contactTitle": "Kontakt",
+    "copyright": "Alle Rechte vorbehalten.",
+    "privacy": "Datenschutzerklärung",
+    "terms": "AGB"
   }
 }

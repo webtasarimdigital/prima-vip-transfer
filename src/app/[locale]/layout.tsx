@@ -8,6 +8,8 @@ import MobileNav from '@/components/MobileNav';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import '../globals.css';
 
+import { supabase } from '@/lib/supabase';
+
 export default async function LocaleLayout({
   children,
   params
@@ -23,9 +25,18 @@ export default async function LocaleLayout({
  
   const messages = await getMessages();
 
-  // TODO: Fetch from Supabase settings table later
-  const phone = '05323591039';
-  const email = 'Primaviptransfer@gmail.com';
+  let phone = '05323591039';
+  let email = 'Primaviptransfer@gmail.com';
+
+  try {
+    const { data } = await supabase.from('settings').select('*').eq('id', 1).single();
+    if (data) {
+      phone = data.phone || phone;
+      email = data.email || email;
+    }
+  } catch (e) {
+    console.error('Failed to load settings:', e);
+  }
  
   return (
     <html lang={locale}>
