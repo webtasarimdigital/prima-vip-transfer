@@ -108,6 +108,54 @@ export default function AdminDashboard() {
     fetchExtras();
   }, []);
 
+  // Check if selected route exists and auto-fill prices
+  useEffect(() => {
+    if (!newRoute.from || !newRoute.to) return;
+    const existing = routes.find(r => 
+      (r.from.trim().toLowerCase() === newRoute.from.trim().toLowerCase() && r.to.trim().toLowerCase() === newRoute.to.trim().toLowerCase()) ||
+      (r.from.trim().toLowerCase() === newRoute.to.trim().toLowerCase() && r.to.trim().toLowerCase() === newRoute.from.trim().toLowerCase())
+    );
+    if (existing) {
+      setNewRoute(prev => {
+        if (
+          prev.price === existing.price &&
+          prev.price_vito === existing.price_vito &&
+          prev.price_maybach === existing.price_maybach &&
+          prev.price_minibus === existing.price_minibus &&
+          prev.currency === existing.currency
+        ) {
+          return prev;
+        }
+        return {
+          ...prev,
+          price: existing.price,
+          price_vito: existing.price_vito ?? null,
+          price_maybach: existing.price_maybach ?? null,
+          price_minibus: existing.price_minibus ?? null,
+          currency: existing.currency
+        };
+      });
+    } else {
+      setNewRoute(prev => {
+        if (
+          prev.price === 0 &&
+          prev.price_vito === null &&
+          prev.price_maybach === null &&
+          prev.price_minibus === null
+        ) {
+          return prev;
+        }
+        return {
+          ...prev,
+          price: 0,
+          price_vito: null,
+          price_maybach: null,
+          price_minibus: null
+        };
+      });
+    }
+  }, [newRoute.from, newRoute.to, routes]);
+
   const showMessage = (msg: string) => {
     setMessage(msg);
     setTimeout(() => setMessage(''), 3000);
@@ -166,6 +214,41 @@ export default function AdminDashboard() {
         });
         await fetchRoutes();
         showMessage('Rota eklendi!');
+      }
+    } catch (e: any) {
+      alert('Sistem hatası: ' + e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateTopRoute = async (routeId: number) => {
+    if (!newRoute.from || !newRoute.to || newRoute.price < 0) {
+      alert('Lütfen geçerli fiyat bilgisi giriniz.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch('/api/admin/routes', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: routeId,
+          from: newRoute.from,
+          to: newRoute.to,
+          price: newRoute.price,
+          price_vito: newRoute.price_vito,
+          price_maybach: newRoute.price_maybach,
+          price_minibus: newRoute.price_minibus,
+          currency: newRoute.currency
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert('Güncelleme hatası: ' + (data.error || 'Bilinmeyen hata'));
+      } else {
+        await fetchRoutes();
+        showMessage('Mevcut Rota Başarıyla Güncellendi!');
       }
     } catch (e: any) {
       alert('Sistem hatası: ' + e.message);
@@ -443,76 +526,153 @@ export default function AdminDashboard() {
                 </button>
               </div>
 
-              {/* Add new */}
+              {/* Add or Edit Route Panel */}
               <div className="bg-secondary border border-gray-800 rounded-xl p-6 mb-8">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                  <h3 className="text-lg font-semibold text-white">Yeni Rota Ekle</h3>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsManualRoute(!isManualRoute);
-                      setNewRoute(prev => ({ ...prev, from: isManualRoute ? 'Antalya Havalimanı' : '', to: '' }));
-                    }}
-                    className={`text-xs py-1.5 px-3 rounded-lg font-semibold transition-all ${
-                      isManualRoute ? 'bg-zinc-800 text-gray-400 hover:text-white' : 'bg-gold text-black'
-                    }`}
-                  >
-                    {isManualRoute ? '📋 Listeden Seç (Kolay)' : '✍️ Kendim Yazacağım (Manuel)'}
-                  </button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                  {isManualRoute ? (
+                {(() => {
+                  const matchedRoute = routes.find(r => 
+                    r.from && r.to && newRoute.from && newRoute.to && (
+                      (r.from.trim().toLowerCase() === newRoute.from.trim().toLowerCase() && r.to.trim().toLowerCase() === newRoute.to.trim().toLowerCase()) ||
+                      (r.from.trim().toLowerCase() === newRoute.to.trim().toLowerCase() && r.to.trim().toLowerCase() === newRoute.from.trim().toLowerCase())
+                    )
+                  );
+
+                  return (
                     <>
-                      <input
-                        type="text" value={newRoute.from} onChange={(e) => setNewRoute({ ...newRoute, from: e.target.value })}
-                        placeholder="Nereden (Örn: Sivas)"
-                        className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
-                      />
-                      <input
-                        type="text" value={newRoute.to} onChange={(e) => setNewRoute({ ...newRoute, to: e.target.value })}
-                        placeholder="Nereye (Örn: Belek)"
-                        className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
-                      />
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-lg font-semibold text-white">
+                            {matchedRoute ? 'Rota Fiyatlarını Güncelle' : 'Yeni Rota Ekle'}
+                          </h3>
+                          {matchedRoute ? (
+                            <span className="bg-green-500/10 border border-green-500/30 text-green-400 text-xs px-2.5 py-1 rounded-full font-semibold animate-pulse">
+                              🔄 Sistemde Kayıtlı Rota (Düzenleniyor)
+                            </span>
+                          ) : (
+                            <span className="bg-gold/10 border border-gold/30 text-gold text-xs px-2.5 py-1 rounded-full font-semibold">
+                              ➕ Yeni Rota Girişi
+                            </span>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsManualRoute(!isManualRoute);
+                            setNewRoute(prev => ({ ...prev, from: isManualRoute ? 'Antalya Havalimanı' : '', to: '' }));
+                          }}
+                          className={`text-xs py-1.5 px-3 rounded-lg font-semibold transition-all ${
+                            isManualRoute ? 'bg-zinc-800 text-gray-400 hover:text-white' : 'bg-gold text-black'
+                          }`}
+                        >
+                          {isManualRoute ? '📋 Listeden Seç (Kolay)' : '✍️ Kendim Yazacağım (Manuel)'}
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        {isManualRoute ? (
+                          <>
+                            <input
+                              type="text" value={newRoute.from} onChange={(e) => setNewRoute({ ...newRoute, from: e.target.value })}
+                              placeholder="Nereden (Örn: Kumköy)"
+                              className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold w-full"
+                            />
+                            <input
+                              type="text" value={newRoute.to} onChange={(e) => setNewRoute({ ...newRoute, to: e.target.value })}
+                              placeholder="Nereye (Örn: Belek)"
+                              className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold w-full"
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <select
+                              value={newRoute.from} onChange={(e) => setNewRoute({ ...newRoute, from: e.target.value })}
+                              className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold w-full"
+                            >
+                              <option value="" disabled>Nereden</option>
+                              {ADMIN_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                            </select>
+                            <select
+                              value={newRoute.to} onChange={(e) => setNewRoute({ ...newRoute, to: e.target.value })}
+                              className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold w-full"
+                            >
+                              <option value="" disabled>Nereye</option>
+                              {ADMIN_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                            </select>
+                          </>
+                        )}
+                        
+                        <select
+                          value={newRoute.currency} onChange={(e) => setNewRoute({ ...newRoute, currency: e.target.value })}
+                          className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold w-full"
+                        >
+                          <option value="EUR">EUR (€)</option>
+                          <option value="USD">USD ($)</option>
+                          <option value="GBP">GBP (£)</option>
+                          <option value="TRY">TRY (₺)</option>
+                        </select>
+
+                        {matchedRoute ? (
+                          <button
+                            onClick={() => updateTopRoute(matchedRoute.id)} disabled={loading}
+                            className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-400 text-black font-extrabold rounded-lg transition-colors py-3 md:py-0 w-full"
+                          >
+                            <Save size={18} /> Kaydet ve Güncelle
+                          </button>
+                        ) : (
+                          <button
+                            onClick={addRoute} disabled={loading}
+                            className="flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-black font-extrabold rounded-lg transition-colors py-3 md:py-0 w-full"
+                          >
+                            <Plus size={18} /> Yeni Rota Olarak Ekle
+                          </button>
+                        )}
+                      </div>
+
+                      {/* 4 Vehicle Prices Grid */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 bg-zinc-950/50 p-4 rounded-xl border border-zinc-800/80">
+                        <div className="flex flex-col gap-1.5">
+                          <span className="text-xs text-gray-400 font-semibold">Sedan Fiyatı</span>
+                          <input
+                            type="number" 
+                            value={newRoute.price || ''} 
+                            onChange={(e) => setNewRoute({ ...newRoute, price: parseFloat(e.target.value) || 0 })}
+                            placeholder="Sedan Fiyatı"
+                            className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold text-sm"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <span className="text-xs text-gray-400 font-semibold">Vito (Boşsa Sedan + 5)</span>
+                          <input
+                            type="number" 
+                            value={newRoute.price_vito !== undefined && newRoute.price_vito !== null ? newRoute.price_vito : ''} 
+                            onChange={(e) => setNewRoute({ ...newRoute, price_vito: e.target.value === '' ? null : parseFloat(e.target.value) })}
+                            placeholder="Otomatik (+5)"
+                            className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold text-sm"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <span className="text-xs text-gray-400 font-semibold">Maybach (Boşsa Sedan + 10)</span>
+                          <input
+                            type="number" 
+                            value={newRoute.price_maybach !== undefined && newRoute.price_maybach !== null ? newRoute.price_maybach : ''} 
+                            onChange={(e) => setNewRoute({ ...newRoute, price_maybach: e.target.value === '' ? null : parseFloat(e.target.value) })}
+                            placeholder="Otomatik (+10)"
+                            className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold text-sm"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <span className="text-xs text-gray-400 font-semibold">Minibus (Boşsa Sedan + 20)</span>
+                          <input
+                            type="number" 
+                            value={newRoute.price_minibus !== undefined && newRoute.price_minibus !== null ? newRoute.price_minibus : ''} 
+                            onChange={(e) => setNewRoute({ ...newRoute, price_minibus: e.target.value === '' ? null : parseFloat(e.target.value) })}
+                            placeholder="Otomatik (+20)"
+                            className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold text-sm"
+                          />
+                        </div>
+                      </div>
                     </>
-                  ) : (
-                    <>
-                      <select
-                        value={newRoute.from} onChange={(e) => setNewRoute({ ...newRoute, from: e.target.value })}
-                        className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
-                      >
-                        <option value="" disabled>Nereden</option>
-                        {ADMIN_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
-                      </select>
-                      <select
-                        value={newRoute.to} onChange={(e) => setNewRoute({ ...newRoute, to: e.target.value })}
-                        className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
-                      >
-                        <option value="" disabled>Nereye</option>
-                        {ADMIN_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
-                      </select>
-                    </>
-                  )}
-                  <input
-                    type="number" value={newRoute.price} onChange={(e) => setNewRoute({ ...newRoute, price: parseFloat(e.target.value) })}
-                    placeholder="Fiyat"
-                    className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
-                  />
-                  <select
-                    value={newRoute.currency} onChange={(e) => setNewRoute({ ...newRoute, currency: e.target.value })}
-                    className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
-                  >
-                    <option value="EUR">EUR (€)</option>
-                    <option value="USD">USD ($)</option>
-                    <option value="GBP">GBP (£)</option>
-                    <option value="TRY">TRY (₺)</option>
-                  </select>
-                  <button
-                    onClick={addRoute} disabled={loading}
-                    className="flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-black font-bold rounded-lg transition-colors py-3 md:py-0"
-                  >
-                    <Plus size={18} /> Ekle
-                  </button>
-                </div>
+                  );
+                })()}
               </div>
 
               {/* Route List */}
