@@ -20,11 +20,11 @@ export default function Header({ phone }: { phone: string }) {
 
   return (
     <header className="absolute top-0 left-0 w-full z-50 bg-black/85 border-b border-gold/15 shadow-lg">
-      {/* Top Info Bar */}
-      <div className="bg-zinc-950/90 border-b border-zinc-900 py-2">
-        <div className="container mx-auto px-4 lg:px-8 flex items-center justify-between">
+      {/* Mobile-Only Top Info Bar */}
+      <div className="bg-zinc-950/90 border-b border-zinc-900 py-2 md:hidden">
+        <div className="container mx-auto px-4 flex items-center justify-between">
           {/* Phone Link */}
-          <a href={`tel:${phone}`} className="flex items-center gap-2 text-white font-bold text-xs md:text-sm tracking-wide hover:text-gold transition-colors">
+          <a href={`tel:${phone}`} className="flex items-center gap-2 text-white font-bold text-xs tracking-wide hover:text-gold transition-colors">
             <Phone size={14} className="text-gold fill-gold" />
             <span>{phone}</span>
           </a>
@@ -48,11 +48,11 @@ export default function Header({ phone }: { phone: string }) {
 
       {/* Main Navigation Bar */}
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-24 md:h-28">
           
-          {/* Logo */}
+          {/* Logo (Bigger!) */}
           <Link href="/" className="flex items-center gap-2">
-            <img src="/prima-vip-logo.png" alt="Prima VIP Transfer" className="h-10 md:h-14 w-auto object-contain" />
+            <img src="/prima-vip-logo.png" alt="Prima VIP Transfer" className="h-15 md:h-22 w-auto object-contain" />
           </Link>
 
           {/* Desktop Nav */}
@@ -63,6 +63,29 @@ export default function Header({ phone }: { phone: string }) {
             <Link href="/galeri" className="text-sm font-medium text-gray-200 hover:text-gold transition-colors">{t('gallery')}</Link>
             <Link href="/iletisim" className="text-sm font-medium text-gray-200 hover:text-gold transition-colors">{t('contact')}</Link>
           </nav>
+
+          {/* Desktop Phone & Language (Visible only on desktop) */}
+          <div className="hidden md:flex items-center gap-6">
+            <a href={`tel:${phone}`} className="flex items-center gap-2 text-gold font-semibold hover:text-gold-light transition-colors">
+              <Phone size={18} />
+              <span>{phone}</span>
+            </a>
+            
+            {/* Lang Switcher (Flags) */}
+            <div className="flex items-center gap-3 border-l border-gray-700 pl-6">
+              {locales.map((l) => (
+                <Link 
+                  key={l.code} 
+                  href={pathname} 
+                  locale={l.code as any}
+                  className={`transition-transform hover:scale-110 ${currentLocale !== l.code ? 'opacity-50 hover:opacity-100' : 'scale-110 shadow-[0_0_10px_rgba(212,175,55,0.5)] rounded-sm'}`}
+                  title={l.label}
+                >
+                  <img src={l.flag} alt={l.label} className="w-6 h-4 object-cover rounded-sm" />
+                </Link>
+              ))}
+            </div>
+          </div>
 
           {/* Mobile Menu Button */}
           <button 
