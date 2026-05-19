@@ -61,6 +61,7 @@ export default function AdminDashboard() {
   // Extras
   const [extras, setExtras] = useState<ExtraService[]>([]);
   const [newExtra, setNewExtra] = useState({ name: '', image: '', price: 0, currency: 'EUR', is_active: true });
+  const [editingExtra, setEditingExtra] = useState<ExtraService | null>(null);
 
   // Auth check
   useEffect(() => {
@@ -249,6 +250,20 @@ export default function AdminDashboard() {
     await fetch(`/api/admin/extras?id=${id}`, { method: 'DELETE' });
     await fetchExtras();
     showMessage('Ekstra hizmet silindi!');
+  };
+
+  const saveEditedExtra = async () => {
+    if (!editingExtra) return;
+    setLoading(true);
+    await fetch('/api/admin/extras', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editingExtra),
+    });
+    setEditingExtra(null);
+    await fetchExtras();
+    setLoading(false);
+    showMessage('Ekstra güncellendi!');
   };
 
   const toggleExtra = async (extra: ExtraService) => {
@@ -592,32 +607,67 @@ export default function AdminDashboard() {
               </div>
 
               {/* Extra List */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="space-y-3">
                 {extras.length === 0 && (
-                  <p className="text-gray-500 text-center py-8 col-span-full">Henüz ekstra hizmet eklenmemiş.</p>
+                  <p className="text-gray-500 text-center py-8 bg-secondary border border-gray-800 rounded-lg">Ekstralar yükleniyor veya henüz eklenmemiş...</p>
                 )}
                 {extras.map((ex) => (
-                  <div key={ex.id} className={`bg-secondary border rounded-lg p-4 flex flex-col justify-between ${ex.is_active ? 'border-gray-800' : 'border-red-900/50 opacity-50'}`}>
-                    <div className="flex justify-between items-start mb-4">
-                      <h4 className="text-white font-medium">{ex.name}</h4>
-                      <div className="flex items-center gap-2">
-                        <button 
-                          onClick={() => toggleExtra(ex)}
-                          className={`text-xs px-2 py-1 rounded ${ex.is_active ? 'bg-green-900/40 text-green-400' : 'bg-red-900/40 text-red-400'}`}
+                  <div key={ex.id} className={`bg-secondary border rounded-lg p-4 flex flex-col md:flex-row items-center gap-4 justify-between ${ex.is_active ? 'border-gray-800' : 'border-red-900/50 opacity-50'}`}>
+                    {editingExtra?.id === ex.id ? (
+                      // Inline Edit Mode
+                      <div className="w-full flex flex-col md:flex-row items-center gap-3">
+                        <input
+                          type="text" value={editingExtra.name} onChange={(e) => setEditingExtra({ ...editingExtra, name: e.target.value })}
+                          className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-2 outline-none focus:border-gold flex-1 w-full"
+                          placeholder="Ekstra adı"
+                        />
+                        <input
+                          type="number" value={editingExtra.price} onChange={(e) => setEditingExtra({ ...editingExtra, price: parseFloat(e.target.value) })}
+                          className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-2 outline-none focus:border-gold w-full md:w-28"
+                        />
+                        <select
+                          value={editingExtra.currency} onChange={(e) => setEditingExtra({ ...editingExtra, currency: e.target.value })}
+                          className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-2 outline-none focus:border-gold w-full md:w-auto"
                         >
-                          {ex.is_active ? 'Aktif' : 'Pasif'}
-                        </button>
-                        <button onClick={() => deleteExtra(ex.id)} className="text-red-400 hover:text-red-300 p-1">
-                          <Trash2 size={16} />
-                        </button>
+                          <option value="EUR">EUR (€)</option>
+                          <option value="USD">USD ($)</option>
+                          <option value="GBP">GBP (£)</option>
+                          <option value="TRY">TRY (₺)</option>
+                        </select>
+                        <div className="flex gap-2 w-full md:w-auto justify-end">
+                          <button onClick={saveEditedExtra} disabled={loading} className="text-green-400 hover:text-green-300 p-2 bg-green-400/10 rounded">
+                            <Save size={18} />
+                          </button>
+                          <button onClick={() => setEditingExtra(null)} className="text-gray-400 hover:text-gray-300 p-2 bg-gray-800 rounded">
+                            <X size={18} />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-gray-400 text-sm">Fiyat:</span>
-                      <span className="text-gold font-bold text-lg bg-gold/10 px-3 py-1 rounded">
-                        {ex.price} {ex.currency === 'EUR' ? '€' : ex.currency === 'USD' ? '$' : ex.currency === 'GBP' ? '£' : '₺'}
-                      </span>
-                    </div>
+                    ) : (
+                      // View Mode
+                      <>
+                        <div className="flex-1 flex items-center gap-4 w-full">
+                          <h4 className="text-white font-medium flex-1">{ex.name}</h4>
+                          <span className="text-gold font-bold text-lg bg-gold/10 px-3 py-1 rounded">
+                            {ex.price} {ex.currency === 'EUR' ? '€' : ex.currency === 'USD' ? '$' : ex.currency === 'GBP' ? '£' : '₺'}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => toggleExtra(ex)}
+                            className={`text-xs px-2 py-1 rounded ${ex.is_active ? 'bg-green-900/40 text-green-400' : 'bg-red-900/40 text-red-400'}`}
+                          >
+                            {ex.is_active ? 'Aktif' : 'Pasif'}
+                          </button>
+                          <button onClick={() => setEditingExtra(ex)} className="text-blue-400 hover:text-blue-300 p-2">
+                            <Edit2 size={16} />
+                          </button>
+                          <button onClick={() => deleteExtra(ex.id)} className="text-red-400 hover:text-red-300 p-1">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>
