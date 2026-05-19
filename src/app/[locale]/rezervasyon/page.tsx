@@ -91,6 +91,7 @@ export default function ReservationPage() {
   const router = useRouter();
   const t = useTranslations('Booking');
   const tLoc = useTranslations('Locations');
+  const tHero = useTranslations('Hero');
 
   const [locations, setLocations] = useState<string[]>([
     'Antalya Merkez', 'Lara', 'Kundu', 'Kaleiçi', 'Konyaaltı',
@@ -307,7 +308,7 @@ export default function ReservationPage() {
                     className="bg-zinc-950 border border-zinc-800 text-white rounded-lg p-3 outline-none focus:border-gold transition-all text-sm"
                     required
                   >
-                    <option value="" disabled>Seçiniz</option>
+                    <option value="" disabled>{tHero('select')}</option>
                     <option value="Antalya Havalimanı">{tLoc('antalyaAirport')}</option>
                     {locations.map((loc) => <option key={loc} value={loc}>{translateLocation(loc)}</option>)}
                   </select>
@@ -323,7 +324,7 @@ export default function ReservationPage() {
                     className="bg-zinc-950 border border-zinc-800 text-white rounded-lg p-3 outline-none focus:border-gold transition-all text-sm"
                     required
                   >
-                    <option value="" disabled>Seçiniz</option>
+                    <option value="" disabled>{tHero('select')}</option>
                     <option value="Antalya Havalimanı">{tLoc('antalyaAirport')}</option>
                     {locations.map((loc) => <option key={loc} value={loc}>{translateLocation(loc)}</option>)}
                   </select>
@@ -355,7 +356,7 @@ export default function ReservationPage() {
                     className="bg-zinc-950 border border-zinc-800 text-white rounded-lg p-3 outline-none focus:border-gold transition-all text-sm"
                     required
                   >
-                    <option value="" disabled>Seçiniz</option>
+                    <option value="" disabled>{tHero('select')}</option>
                     <option value="EUR">EUR (€)</option>
                     <option value="USD">USD ($)</option>
                     <option value="GBP">GBP (£)</option>

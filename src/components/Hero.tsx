@@ -6,12 +6,22 @@ import { useState, useEffect } from 'react';
 
 export default function Hero() {
   const t = useTranslations('Hero');
+  const tLoc = useTranslations('Locations');
+  const tBooking = useTranslations('Booking');
   const router = useRouter();
 
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [pax, setPax] = useState('1');
   const [currency, setCurrency] = useState('');
+
+  const translateLocation = (name: string) => {
+    if (name === 'Antalya Havalimanı') return tLoc('antalyaAirport');
+    if (name === 'Antalya Merkez') return tLoc('antalyaCenter');
+    if (name === 'Kaleiçi') return tLoc('kaleici');
+    if (name === 'Olimpos') return tLoc('olympos');
+    return name;
+  };
 
   const [locations, setLocations] = useState<string[]>([
     'Antalya Havalimanı', 'Antalya Merkez', 'Lara', 'Kundu', 'Kaleiçi', 'Konyaaltı',
@@ -111,7 +121,7 @@ export default function Hero() {
                 required
               >
                 <option value="" disabled>{t('select')}</option>
-                {locations.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                {locations.map((loc) => <option key={loc} value={loc}>{translateLocation(loc)}</option>)}
               </select>
             </div>
 
@@ -124,7 +134,7 @@ export default function Hero() {
                 required
               >
                 <option value="" disabled>{t('select')}</option>
-                {locations.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                {locations.map((loc) => <option key={loc} value={loc}>{translateLocation(loc)}</option>)}
               </select>
             </div>
 
@@ -136,7 +146,7 @@ export default function Hero() {
                 className="bg-secondary/80 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold transition-colors"
               >
                 {[...Array(14)].map((_, i) => (
-                  <option key={i+1} value={i+1}>{i+1} Kişi</option>
+                  <option key={i+1} value={i+1}>{i+1} {tBooking('paxSuffix')}</option>
                 ))}
               </select>
             </div>
@@ -149,7 +159,7 @@ export default function Hero() {
                 className="bg-secondary/80 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold transition-colors"
                 required
               >
-                <option value="" disabled>Seçiniz</option>
+                <option value="" disabled>{t('select')}</option>
                 <option value="EUR">EUR (€)</option>
                 <option value="USD">USD ($)</option>
                 <option value="GBP">GBP (£)</option>
