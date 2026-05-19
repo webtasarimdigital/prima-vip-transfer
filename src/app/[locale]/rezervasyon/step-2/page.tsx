@@ -4,13 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { MapPin, Route, Users, Baby, Plus, Calendar, Clock, Plane, Hotel, Check } from 'lucide-react';
-
-const VEHICLE_NAMES: Record<string, string> = {
-  '1': 'VIP SEDAN (1-3) PAX',
-  '2': 'VIP EXCLUSIVE (1-6) PAX',
-  '3': 'ROYAL CLASS VIP (1-6) PAX',
-  '4': 'VIP MINIBÜS (1-14) PAX',
-};
+import { useTranslations } from 'next-intl';
 
 const VEHICLE_IMAGES: Record<string, string> = {
   '1': '/prima-vip-arac.jpeg',
@@ -77,19 +71,31 @@ interface ExtraService {
 }
 
 export default function ReservationStep2() {
+  const t = useTranslations('Booking');
+  const tLoc = useTranslations('Locations');
   const searchParams = useSearchParams();
 
-  const from = searchParams.get('from') || '';
-  const to = searchParams.get('to') || '';
+  const fromRaw = searchParams.get('from') || '';
+  const toRaw = searchParams.get('to') || '';
   const pax = searchParams.get('pax') || '1';
   const currency = searchParams.get('currency') || 'EUR';
   const direction = searchParams.get('direction') || 'one-way';
   const vehicleId = searchParams.get('vehicleId') || '1';
   const basePrice = parseFloat(searchParams.get('price') || '0');
 
-  const routeInfo = ROUTE_INFO[to] || { km: '- KM', duration: '- DK' };
+  let destForInfo = toRaw;
+  if (toRaw === 'Antalya Havalimanı') destForInfo = fromRaw;
+
+  const routeInfo = ROUTE_INFO[destForInfo] || { km: '- KM', duration: '- DK' };
   const currencySymbol: Record<string, string> = { EUR: '€', USD: '$', GBP: '£', TRY: '₺' };
   const directionLabel = direction === 'round-trip' ? 'Gidiş / Dönüş Transfer' : 'Tek Yön Transfer';
+
+  const VEHICLE_NAMES: Record<string, string> = {
+    '1': t('vehicleTypes.sedan'),
+    '2': t('vehicleTypes.vito'),
+    '3': t('vehicleTypes.royal'),
+    '4': t('vehicleTypes.minibus'),
+  };
 
   const [form, setForm] = useState({
     name: '',
@@ -104,13 +110,12 @@ export default function ReservationStep2() {
     babyChair: false,
   });
 
-   const [extras, setExtras] = useState<ExtraService[]>([]);
+  const [extras, setExtras] = useState<ExtraService[]>([]);
   const [selectedExtras, setSelectedExtras] = useState<Record<number, number>>({});
   const [rates, setRates] = useState<Record<string, number>>({ EUR: 1, USD: 1.08, GBP: 0.85, TRY: 53.0 });
   const [settingsPhone, setSettingsPhone] = useState('05323591039');
 
   useEffect(() => {
-    // Fetch live currency rates
     fetch('https://open.er-api.com/v6/latest/EUR')
       .then((res) => res.json())
       .then((data) => {
@@ -118,7 +123,7 @@ export default function ReservationStep2() {
           setRates(data.rates);
         }
       })
-      .catch((err) => console.error('Döviz kuru yüklenemedi:', err));
+      .catch((err) => console.error('Currency fetch failed:', err));
   }, []);
 
   useEffect(() => {
@@ -129,7 +134,7 @@ export default function ReservationStep2() {
           setSettingsPhone(data.phone);
         }
       })
-      .catch(err => console.error('Ayarlar yüklenemedi:', err));
+      .catch(err => console.error('Settings fetch failed:', err));
   }, []);
 
   useEffect(() => {
@@ -160,7 +165,6 @@ export default function ReservationStep2() {
     setForm({ ...form, [target.name]: value });
   };
 
-  // Helper to convert extra service price from DB currency to user currency
   const getConvertedExtraPrice = (extra: ExtraService) => {
     const fromRate = rates[extra.currency] || 1;
     const toRate = rates[currency] || 1;
@@ -174,6 +178,17 @@ export default function ReservationStep2() {
   }, 0);
 
   const finalPrice = basePrice + extrasTotalPrice;
+
+  const translateLocation = (name: string) => {
+    if (name === 'Antalya Havalimanı') return tLoc('antalyaAirport');
+    if (name === 'Antalya Merkez') return tLoc('antalyaCenter');
+    if (name === 'Kaleiçi') return tLoc('kaleici');
+    if (name === 'Olimpos') return tLoc('olympos');
+    return name;
+  };
+
+  const from = translateLocation(fromRaw);
+  const to = translateLocation(toRaw);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -210,7 +225,6 @@ export default function ReservationStep2() {
       `💰 *TOPLAM FİYAT:* ${finalPrice} ${currencySymbol[currency] || '€'}%0A%0A` +
       `${form.note ? `💬 *Not:* ${form.note}` : ''}`;
 
-    // Clean and format settingsPhone for WhatsApp
     let waNumber = settingsPhone.replace(/\D/g, '');
     if (waNumber.startsWith('00')) {
       waNumber = waNumber.substring(2);
@@ -225,17 +239,16 @@ export default function ReservationStep2() {
 
   return (
     <div className="pt-24 pb-20">
-      {/* Steps indicator */}
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center gap-4 max-w-lg mx-auto">
           <div className="flex flex-col items-center">
             <div className="w-10 h-10 rounded-full bg-gold text-black font-bold flex items-center justify-center">✓</div>
-            <span className="text-xs text-gold mt-2 font-medium">Araç Seçimi</span>
+            <span className="text-xs text-gold mt-2 font-medium">{t('step1Title')}</span>
           </div>
           <div className="flex-1 h-0.5 bg-gold"></div>
           <div className="flex flex-col items-center">
             <div className="w-10 h-10 rounded-full bg-gold text-black font-bold flex items-center justify-center">2</div>
-            <span className="text-xs text-gold mt-2 font-medium">Rezervasyon</span>
+            <span className="text-xs text-gold mt-2 font-medium">{t('step2Title')}</span>
           </div>
         </div>
       </div>
@@ -243,35 +256,33 @@ export default function ReservationStep2() {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* Form - Left Side */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-8">
               
-              {/* Personal Info */}
               <div>
                 <h2 className="text-xl font-bold text-white mb-6 inline-block relative pb-3">
-                  Kişisel Bilgiler
+                  {t('personalInfo')}
                   <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gold"></div>
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">Ad Soyad:</label>
+                    <label className="block text-sm text-gray-400 mb-2">{t('fullName')}:</label>
                     <input
                       type="text" name="name" required value={form.name} onChange={handleChange}
-                      placeholder="Ad Soyad"
+                      placeholder={t('fullName')}
                       className="w-full bg-secondary border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">E-Mail:</label>
+                    <label className="block text-sm text-gray-400 mb-2">{t('email')}:</label>
                     <input
                       type="email" name="email" value={form.email} onChange={handleChange}
-                      placeholder="E-Mail"
+                      placeholder={t('email')}
                       className="w-full bg-secondary border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold transition-colors"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm text-gray-400 mb-2">Telefon:</label>
+                    <label className="block text-sm text-gray-400 mb-2">{t('phone')}:</label>
                     <div className="flex gap-2">
                       <select
                         name="countryCode" value={form.countryCode} onChange={handleChange}
@@ -283,19 +294,16 @@ export default function ReservationStep2() {
                       </select>
                       <input
                         type="tel" name="phone" required value={form.phone} onChange={handleChange}
-                        placeholder="Telefon"
+                        placeholder={t('phone')}
                         className="flex-1 bg-secondary border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold transition-colors"
                       />
                     </div>
-                    <p className="text-xs text-gold/60 mt-2 flex items-center gap-1">
-                      Numaranızı lütfen alan kodunu seçtikten sonra giriniz!
-                    </p>
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm text-gray-400 mb-2">Bize notunuz var mı ?:</label>
+                    <label className="block text-sm text-gray-400 mb-2">{t('notes')}:</label>
                     <textarea
                       name="note" value={form.note} onChange={handleChange}
-                      placeholder="Bize notunuz var mı ?"
+                      placeholder={t('notes')}
                       rows={3}
                       className="w-full bg-secondary border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold transition-colors resize-none"
                     />
@@ -303,29 +311,28 @@ export default function ReservationStep2() {
                 </div>
               </div>
 
-              {/* Transfer Info */}
               <div>
                 <h2 className="text-xl font-bold text-white mb-6 inline-block relative pb-3">
-                  Geliş Transfer Bilgileri
+                  {t('transferInfo')}
                   <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gold"></div>
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">Uçak İniş Tarihi:</label>
+                    <label className="block text-sm text-gray-400 mb-2">{t('date')}:</label>
                     <input
                       type="date" name="flightDate" required value={form.flightDate} onChange={handleChange}
                       className="w-full bg-secondary border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">Uçak İniş Saati:</label>
+                    <label className="block text-sm text-gray-400 mb-2">{t('time')}:</label>
                     <input
                       type="time" name="flightTime" required value={form.flightTime} onChange={handleChange}
                       className="w-full bg-secondary border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">Uçuş Kodu:</label>
+                    <label className="block text-sm text-gray-400 mb-2">{t('flightNumber')}:</label>
                     <input
                       type="text" name="flightCode" value={form.flightCode} onChange={handleChange}
                       placeholder="EX: QX0707"
@@ -333,25 +340,23 @@ export default function ReservationStep2() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">Gideceğiniz Yer:</label>
+                    <label className="block text-sm text-gray-400 mb-2">{t('summaryTo')}:</label>
                     <input
                       type="text" name="destination" value={form.destination} onChange={handleChange}
-                      placeholder="Yer / Otel"
+                      placeholder={t('summaryTo')}
                       className="w-full bg-secondary border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold transition-colors"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Extras and Baby Chair */}
               <div>
                 <h2 className="text-xl font-bold text-white mb-6 inline-block relative pb-3">
-                  Ekstralar
+                  {t('extrasTitle')}
                   <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gold"></div>
                 </h2>
                 <div className="flex flex-col gap-6">
                   
-                  {/* Baby Chair (Always present) */}
                   <button
                     type="button"
                     onClick={() => setForm({ ...form, babyChair: !form.babyChair })}
@@ -360,13 +365,12 @@ export default function ReservationStep2() {
                     }`}
                   >
                     <Baby size={24} />
-                    <span className="font-medium text-lg">Bebek Koltuğu (Ücretsiz)</span>
+                    <span className="font-medium text-lg">{t('features.babySeat')} ({t('free')})</span>
                     <div className={`ml-auto w-6 h-6 rounded-md border flex items-center justify-center ${form.babyChair ? 'bg-gold border-gold text-black' : 'border-gray-500'}`}>
                       {form.babyChair && <Check size={16} />}
                     </div>
                   </button>
 
-                  {/* Dynamic Extras Grid */}
                   {extras.length > 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                       {extras.map((extra) => {
@@ -382,11 +386,11 @@ export default function ReservationStep2() {
                               onChange={(e) => handleExtraChange(extra.id, parseInt(e.target.value))}
                               className="w-full bg-zinc-900 border border-gray-700 text-white rounded-md p-2 outline-none focus:border-gold text-sm"
                             >
-                              <option value={0}>Seçmeyin</option>
-                              <option value={1}>1 Adet</option>
-                              <option value={2}>2 Adet</option>
-                              <option value={3}>3 Adet</option>
-                              <option value={4}>4 Adet</option>
+                              <option value={0}>0</option>
+                              <option value={1}>1</option>
+                              <option value={2}>2</option>
+                              <option value={3}>3</option>
+                              <option value={4}>4</option>
                             </select>
                           </div>
                         );
@@ -397,25 +401,22 @@ export default function ReservationStep2() {
                 </div>
               </div>
 
-              {/* Submit */}
               <button
                 type="submit"
                 className="w-full bg-gold hover:bg-gold-light text-black font-bold py-4 rounded-lg text-lg transition-all transform hover:scale-[1.01] shadow-[0_0_20px_rgba(212,175,55,0.3)]"
               >
-                ✓ REZERVASYONU TAMAMLA
+                ✓ {t('completeButton')}
               </button>
             </form>
           </div>
 
-          {/* Summary - Right Side */}
           <div className="lg:col-span-1">
             <div className="bg-secondary border border-gray-800 rounded-xl p-6 sticky top-28">
               <h3 className="text-xl font-bold text-white text-center mb-6 inline-block relative pb-3 w-full">
-                Rezervasyon Özeti
+                {t('summaryTitle')}
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-0.5 bg-gold"></div>
               </h3>
 
-              {/* Vehicle image */}
               <div className="relative w-full h-48 rounded-lg overflow-hidden mb-6">
                 <Image
                   src={VEHICLE_IMAGES[vehicleId] || '/prima-vip-arac.jpeg'}
@@ -444,25 +445,25 @@ export default function ReservationStep2() {
                 </div>
                 <div className="flex items-center gap-3">
                   <Users size={16} className="text-gray-500" />
-                  <span className="text-gray-300">{pax} Yetişkin</span>
+                  <span className="text-gray-300">{pax} {t('summaryPax')}</span>
                 </div>
 
                 <hr className="border-gray-700" />
 
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-400">Transfer Ücreti</span>
+                  <span className="text-gray-400">Transfer Tutarı</span>
                   <span className="text-white">{basePrice} {currencySymbol[currency] || '€'}</span>
                 </div>
 
                 {extrasTotalPrice > 0 && (
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">Ekstralar Toplamı</span>
+                    <span className="text-gray-400">Ekstra Tutarı</span>
                     <span className="text-white">+{extrasTotalPrice} {currencySymbol[currency] || '€'}</span>
                   </div>
                 )}
 
                 <div className="bg-gold/10 border border-gold/30 rounded-lg p-4 flex items-center justify-between mt-2">
-                  <span className="text-gold font-bold">Toplam</span>
+                  <span className="text-gold font-bold">{t('summaryTotal')}</span>
                   <span className="text-gold font-bold text-xl">{finalPrice} {currencySymbol[currency] || '€'}</span>
                 </div>
               </div>

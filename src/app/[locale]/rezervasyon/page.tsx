@@ -3,48 +3,10 @@
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from '@/i18n/routing';
 import { useState, useEffect } from 'react';
-import { Check, MapPin, Users, Coins, HelpCircle, ShieldCheck, Clock, CheckCircle } from 'lucide-react';
+import { Check, MapPin, Users, Coins, ShieldCheck, Clock, CheckCircle } from 'lucide-react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
-
-const VEHICLES = [
-  {
-    id: 1,
-    name: 'VIP SEDAN (1-3) PAX',
-    pax: 3,
-    luggage: 3,
-    image: '/prima-vip-arac.jpeg',
-    features: ['Atıştırmalık', 'Soğuk İçecekler (Alkolsüz)', 'Wifi', 'Bebek Koltuğu', 'Lüks Dizayn Araç', 'Kaptan ile bağlantı yok'],
-    description: 'Konforlu ve şık sedan aracımız ile VIP transfer deneyimi.'
-  },
-  {
-    id: 2,
-    name: 'VIP EXCLUSIVE (1-6) PAX',
-    pax: 6,
-    luggage: 6,
-    image: '/prima-vip-arac-ici.jpeg',
-    features: ['Atıştırmalık', 'Soğuk İçecekler (Alkolsüz)', 'Wifi', 'Bebek Koltuğu', 'Lüks Dizayn Araç', 'Kaptan ile bağlantı yok'],
-    description: 'Ultra lüks tasarıma sahip Mercedes Vito aracımız ile özel hissettiren transfer.'
-  },
-  {
-    id: 3,
-    name: 'ROYAL CLASS VIP (1-6) PAX',
-    pax: 6,
-    luggage: 6,
-    image: '/prima-vip-arac-ici-detay.jpeg',
-    features: ['Atıştırmalık', 'Soğuk İçecekler (Alkolsüz)', 'Sürpriz İkramlar', 'Wifi', 'Bebek Koltuğu', 'Lüks Dizayn Araç', 'Kaptan ile bağlantı yok'],
-    description: 'Kraliyet sınıfı konfor ve prestij arayanlar için en üst seviye donanımlı Vito.'
-  },
-  {
-    id: 4,
-    name: 'VIP MINIBÜS (1-14) PAX',
-    pax: 14,
-    luggage: 14,
-    image: '/prima-vip-araclar.jpeg',
-    features: ['Atıştırmalık', 'Soğuk İçecekler (Alkolsüz)', 'Grup Transferine Uygun', 'Wifi', 'Bebek Koltuğu', 'Geniş Bagaj Alanı'],
-    description: 'Kalabalık gruplar ve aileler için geniş, konforlu ve güvenli Sprinter minibüsümüz.'
-  }
-];
+import { useTranslations } from 'next-intl';
 
 const ROUTE_INFO: Record<string, { km: string, duration: string }> = {
   'Antalya Merkez': { km: '18 KM', duration: '20 DK' },
@@ -125,78 +87,113 @@ const FALLBACK_BASE_PRICES: Record<string, number> = {
 };
 
 const LOCATIONS = [
-  'Antalya Havalimanı', 'Antalya Merkez', 'Lara', 'Kundu', 'Kaleiçi', 'Konyaaltı',
+  'Antalya Merkez', 'Lara', 'Kundu', 'Kaleiçi', 'Konyaaltı',
   'Belek', 'Boğazkent', 'Denizyaka',
-  'Kumköy', 'Gündoğdu', 'Çolaklı',
-  'Evrenseki', 'Side', 'Sorgun',
-  'Manavgat', 'Titreyengöl', 'Kızılot',
-  'Kızılağaç', 'Okurcalar', 'Avsallar',
-  'İncekum', 'Çenger', 'Konaklı',
-  'Türkler', 'Alanya', 'Mahmutlar',
-  'Kargıcak', 'Kestel',
-  'Beldibi', 'Göynük', 'Kemer',
-  'Çamyuva', 'Kiriş', 'Tekirova',
+  'Kumköy', 'Gündoğdu', 'Çolaklı', 'Evrenseki', 'Side', 'Sorgun',
+  'Manavgat', 'Titreyengöl', 'Kızılot', 'Kızılağaç',
+  'Okurcalar', 'Avsallar', 'İncekum', 'Çenger',
+  'Konaklı', 'Türkler', 'Alanya', 'Mahmutlar', 'Kargıcak', 'Kestel',
+  'Beldibi', 'Göynük', 'Kemer', 'Çamyuva', 'Kiriş', 'Tekirova',
   'Olimpos', 'Adrasan',
 ];
 
 export default function ReservationPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const t = useTranslations('Booking');
+  const tLoc = useTranslations('Locations');
 
-  const fromParam = searchParams.get('from');
-  const toParam = searchParams.get('to');
-  
-  // Checking if searching flow is active
-  const isSearchActive = !!(fromParam && toParam);
+  const VEHICLES = [
+    {
+      id: 1,
+      name: t('vehicleTypes.sedan'),
+      pax: 3,
+      luggage: 3,
+      image: '/prima-vip-arac.jpeg',
+      features: [t('features.snack'), t('features.drinks'), t('features.wifi'), t('features.babySeat'), t('features.luxuryDesign'), t('features.noDriverContact')],
+      description: t('desc.sedan')
+    },
+    {
+      id: 2,
+      name: t('vehicleTypes.vito'),
+      pax: 6,
+      luggage: 6,
+      image: '/prima-vip-arac-ici.jpeg',
+      features: [t('features.snack'), t('features.drinks'), t('features.wifi'), t('features.babySeat'), t('features.luxuryDesign'), t('features.noDriverContact')],
+      description: t('desc.vito')
+    },
+    {
+      id: 3,
+      name: t('vehicleTypes.royal'),
+      pax: 6,
+      luggage: 6,
+      image: '/prima-vip-arac-ici-detay.jpeg',
+      features: [t('features.snack'), t('features.drinks'), t('features.surprise'), t('features.wifi'), t('features.babySeat'), t('features.luxuryDesign'), t('features.noDriverContact')],
+      description: t('desc.royal')
+    },
+    {
+      id: 4,
+      name: t('vehicleTypes.minibus'),
+      pax: 14,
+      luggage: 14,
+      image: '/prima-vip-araclar.jpeg',
+      features: [t('features.snack'), t('features.drinks'), t('features.groupTransfer'), t('features.wifi'), t('features.babySeat'), t('features.largeLuggage')],
+      description: t('desc.minibus')
+    }
+  ];
 
-  const from = fromParam || 'Antalya Havalimanı';
-  const to = toParam || 'Antalya Merkez';
-  const pax = parseInt(searchParams.get('pax') || '1');
-  const currency = searchParams.get('currency') || 'EUR';
+  const fromRaw = searchParams.get('from');
+  const toRaw = searchParams.get('to');
+  const paxRaw = searchParams.get('pax');
+  const currencyRaw = searchParams.get('currency');
 
-  // Dynamic search form states (for direct visitors)
-  const [searchFrom, setSearchFrom] = useState('');
-  const [searchTo, setSearchTo] = useState('');
-  const [searchPax, setSearchPax] = useState('1');
-  const [searchCurrency, setSearchCurrency] = useState('');
+  const isSearchActive = Boolean(fromRaw && toRaw);
 
-  const [direction, setDirection] = useState<'one-way' | 'round-trip'>('one-way');
+  const [searchFrom, setSearchFrom] = useState(fromRaw || 'Antalya Havalimanı');
+  const [searchTo, setSearchTo] = useState(toRaw || '');
+  const [searchPax, setSearchPax] = useState(paxRaw || '1');
+  const [searchCurrency, setSearchCurrency] = useState(currencyRaw || 'EUR');
+
   const [dbBasePrice, setDbBasePrice] = useState<number | null>(null);
-  const [rates, setRates] = useState<Record<string, number>>({ EUR: 1, USD: 1.08, GBP: 0.85, TRY: 53.0 });
-
-  useEffect(() => {
-    // Fetch live rates from base EUR
-    fetch('https://open.er-api.com/v6/latest/EUR')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.rates) {
-          setRates(data.rates);
-        }
-      })
-      .catch((err) => console.error('Döviz kuru yüklenemedi:', err));
-  }, []);
+  const [rates, setRates] = useState<Record<string, number>>({});
+  const [direction, setDirection] = useState<'one-way' | 'round-trip'>('one-way');
 
   useEffect(() => {
     if (isSearchActive) {
       const fetchPrice = async () => {
-        try {
-          const { data, error } = await supabase
-            .from('route_price')
-            .select('price')
-            .or(`and(from.eq."${from}",to.eq."${to}"),and(from.eq."${to}",to.eq."${from}")`)
-            .limit(1);
-          if (data && data.length > 0) {
-            setDbBasePrice(data[0].price);
-          }
-        } catch (err) {
-          console.error('Fiyat getirme hatası:', err);
+        let routeDest = toRaw;
+        if (toRaw === 'Antalya Havalimanı') routeDest = fromRaw;
+
+        const { data } = await supabase.from('route_price').select('price').eq('to', routeDest).single();
+        if (data) {
+          setDbBasePrice(data.price);
         }
       };
-      fetchPrice();
-    }
-  }, [from, to, isSearchActive]);
 
-  const routeInfo = ROUTE_INFO[to] || { km: '- KM', duration: '- DK' };
+      const fetchRates = async () => {
+        try {
+          const res = await fetch('https://api.exchangerate-api.com/v4/latest/EUR');
+          const data = await res.json();
+          setRates(data.rates);
+        } catch (e) {
+          console.error("Currency fetch failed", e);
+        }
+      };
+
+      fetchPrice();
+      fetchRates();
+    }
+  }, [isSearchActive, fromRaw, toRaw]);
+
+  const from = fromRaw || '';
+  const to = toRaw || '';
+  const pax = parseInt(paxRaw || '1');
+  const currency = currencyRaw || 'EUR';
+
+  let destForInfo = to;
+  if (to === 'Antalya Havalimanı') destForInfo = from;
+  const routeInfo = ROUTE_INFO[destForInfo] || { km: 'N/A', duration: 'N/A' };
+
   const currencySymbol: Record<string, string> = { EUR: '€', USD: '$', GBP: '£', TRY: '₺' };
   const filteredVehicles = VEHICLES.filter(v => v.pax >= pax);
 
@@ -228,35 +225,36 @@ export default function ReservationPage() {
     });
   };
 
-  // State 1: Display Stunning Vertical Hızlı Rezervasyon Form (Direct Visit)
+  const translateLocation = (name: string) => {
+    if (name === 'Antalya Havalimanı') return tLoc('antalyaAirport');
+    if (name === 'Antalya Merkez') return tLoc('antalyaCenter');
+    if (name === 'Kaleiçi') return tLoc('kaleici');
+    if (name === 'Olimpos') return tLoc('olympos');
+    return name;
+  };
+
   if (!isSearchActive) {
     return (
       <div className="relative min-h-screen pt-28 pb-20 bg-zinc-950 flex flex-col justify-center overflow-hidden">
-        {/* Absolute Glowing Gradients */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-gold/5 rounded-full blur-[120px] pointer-events-none z-0"></div>
         
         <div className="container mx-auto px-4 z-10 relative">
           <div className="max-w-xl mx-auto">
-            
-            {/* Form Title */}
             <div className="text-center mb-8">
               <h1 className="text-3xl md:text-4xl font-bold text-white tracking-wider inline-block relative pb-4 uppercase">
-                HIZLI REZERVASYON
+                {t('title')}
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-[2px] bg-gold"></div>
               </h1>
               <p className="text-gray-400 mt-4 text-sm md:text-base">
-                Fiyatları görmek ve anında lüks transferinizi ayırtmak için detayları girin.
+                {t('subtitle')}
               </p>
             </div>
 
-            {/* Vertical Form Box */}
             <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-2xl p-8 shadow-2xl space-y-6">
               <form onSubmit={handleSearchSubmit} className="space-y-5">
-                
-                {/* Nereden Select */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm text-gold font-medium flex items-center gap-2">
-                    <MapPin size={16} /> Nereden ?
+                    <MapPin size={16} /> {t('fromLabel')}
                   </label>
                   <select 
                     value={searchFrom} 
@@ -265,14 +263,14 @@ export default function ReservationPage() {
                     required
                   >
                     <option value="" disabled>Seçiniz</option>
-                    {LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                    <option value="Antalya Havalimanı">{tLoc('antalyaAirport')}</option>
+                    {LOCATIONS.map((loc) => <option key={loc} value={loc}>{translateLocation(loc)}</option>)}
                   </select>
                 </div>
 
-                {/* Nereye Select */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm text-gold font-medium flex items-center gap-2">
-                    <MapPin size={16} /> Nereye ?
+                    <MapPin size={16} /> {t('toLabel')}
                   </label>
                   <select 
                     value={searchTo} 
@@ -281,14 +279,14 @@ export default function ReservationPage() {
                     required
                   >
                     <option value="" disabled>Seçiniz</option>
-                    {LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                    <option value="Antalya Havalimanı">{tLoc('antalyaAirport')}</option>
+                    {LOCATIONS.map((loc) => <option key={loc} value={loc}>{translateLocation(loc)}</option>)}
                   </select>
                 </div>
 
-                {/* Kişi / Pax Select */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm text-gold font-medium flex items-center gap-2">
-                    <Users size={16} /> Kişi ?
+                    <Users size={16} /> {t('paxLabel')}
                   </label>
                   <select 
                     value={searchPax} 
@@ -297,15 +295,14 @@ export default function ReservationPage() {
                     required
                   >
                     {[...Array(14)].map((_, i) => (
-                      <option key={i + 1} value={i + 1}>{i + 1} Yolcu</option>
+                      <option key={i + 1} value={i + 1}>{i + 1} {t('paxSuffix')}</option>
                     ))}
                   </select>
                 </div>
 
-                {/* Currency Select */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm text-gold font-medium flex items-center gap-2">
-                    <Coins size={16} /> Para Birimi ?
+                    <Coins size={16} /> {t('currencyLabel')}
                   </label>
                   <select 
                     value={searchCurrency} 
@@ -321,17 +318,15 @@ export default function ReservationPage() {
                   </select>
                 </div>
 
-                {/* Submit Button */}
                 <button
                   type="submit"
                   className="w-full bg-gold hover:bg-gold-light text-black font-extrabold py-4 rounded-xl text-sm md:text-base transition-all transform hover:scale-[1.01] shadow-[0_0_20px_rgba(212,175,55,0.25)] tracking-wider uppercase"
                 >
-                  🔍 FİYATI GÖR VE REZERVASYON YAP
+                  🔍 {t('buttonSearch')}
                 </button>
               </form>
             </div>
 
-            {/* Badges Info below form */}
             <div className="grid grid-cols-3 gap-2 mt-8 text-center text-[10px] md:text-xs text-gray-500">
               <div className="flex flex-col items-center gap-1.5">
                 <ShieldCheck size={18} className="text-gold" />
@@ -353,48 +348,41 @@ export default function ReservationPage() {
     );
   }
 
-  // State 2: Display Vehicle Selection Page
   return (
     <div className="pt-24 pb-20 bg-zinc-950">
-      {/* Steps indicator */}
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center gap-4 max-w-lg mx-auto">
           <div className="flex flex-col items-center">
             <div className="w-10 h-10 rounded-full bg-gold text-black font-bold flex items-center justify-center">1</div>
-            <span className="text-xs text-gold mt-2 font-medium">Araç Seçimi</span>
+            <span className="text-xs text-gold mt-2 font-medium">{t('step1Title')}</span>
           </div>
           <div className="flex-1 h-0.5 bg-gray-700"></div>
           <div className="flex flex-col items-center">
             <div className="w-10 h-10 rounded-full bg-zinc-800 text-gray-400 font-bold flex items-center justify-center">2</div>
-            <span className="text-xs text-gray-500 mt-2">Rezervasyon</span>
+            <span className="text-xs text-gray-500 mt-2">{t('step2Title')}</span>
           </div>
         </div>
       </div>
 
-      {/* Title */}
       <div className="container mx-auto px-4 text-center mb-12">
         <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 inline-block relative pb-4 uppercase">
-          Lütfen Size Uygun Aracı Seçiniz
+          {t('step1Title')}
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-gold"></div>
         </h1>
         <p className="text-gray-400 mt-4">
-          Araçlarımız Konfor ve Donanım Seviyelerine Göre Sıralanmıştır.
+          {t('step1Subtitle')}
         </p>
         <div className="text-sm text-gold/80 mt-2 bg-gold/5 border border-gold/10 inline-block px-4 py-1.5 rounded-full font-medium">
-          {from} → {to} | {routeInfo.km} / {routeInfo.duration} | {pax} Kişi
+          {translateLocation(from)} → {translateLocation(to)} | {routeInfo.km} / {routeInfo.duration} | {pax} {t('paxSuffix')}
         </div>
       </div>
 
-      {/* Vehicle List */}
       <div className="container mx-auto px-4 lg:px-8 space-y-6">
         {filteredVehicles.map((vehicle, index) => {
-          // Dynamic pricing base charges per vehicle class
           const extraCharges = [0, 5, 10, 20];
           const extraCharge = extraCharges[index] || 0;
 
-          const baseEur = (dbBasePrice || FALLBACK_BASE_PRICES[to] || 40) + extraCharge;
-
-          // Convert dynamically using fetched live rates
+          const baseEur = (dbBasePrice || FALLBACK_BASE_PRICES[destForInfo] || 40) + extraCharge;
           const rate = rates[currency] || 1;
           const calculatedPrice = Math.round(baseEur * rate);
 
@@ -404,18 +392,14 @@ export default function ReservationPage() {
           return (
             <div key={vehicle.id} className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 hover:border-gold/40 transition-all duration-300 shadow-lg">
               <div className="flex flex-col lg:flex-row gap-6">
-                
-                {/* Vehicle Image */}
                 <div className="relative w-full lg:w-72 h-48 rounded-lg overflow-hidden shrink-0">
                   <Image src={vehicle.image} alt={vehicle.name} fill className="object-cover" />
                 </div>
-
-                {/* Features */}
                 <div className="flex-1">
                   <h2 className="text-lg font-bold text-white mb-1 uppercase tracking-wider">
                     {vehicle.name} | <span className="text-gray-400 text-sm">🧳 {vehicle.luggage} Bagaj</span>
                   </h2>
-                  <p className="text-xs text-gold mb-4 uppercase tracking-wide">Araç Özellikleri ve fiyata dahil ücretsiz hizmetler</p>
+                  <p className="text-xs text-gold mb-4 uppercase tracking-wide">Araç Özellikleri</p>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {vehicle.features.map((f, i) => (
                       <div key={i} className="flex items-center gap-2 text-sm text-gray-300">
@@ -429,7 +413,6 @@ export default function ReservationPage() {
                   )}
                 </div>
 
-                {/* Pricing */}
                 <div className="flex flex-col items-center gap-3 lg:w-56 shrink-0 justify-center">
                   <div className="flex gap-2 w-full">
                     <button 
@@ -447,13 +430,13 @@ export default function ReservationPage() {
                       <div className="text-lg">{roundTripPrice} {currencySymbol[currency] || '€'}</div>
                     </button>
                   </div>
-                  <p className="text-xs text-gray-500 text-center">Kişi Başı Değildir, Aracın Toplam Fiyatıdır.</p>
+                  <p className="text-xs text-gray-500 text-center">Toplam Fiyat</p>
                   <button
                     onClick={() => handleSelect(vehicle.id, direction === 'one-way' ? oneWayPrice : roundTripPrice)}
                     className="w-full bg-gold hover:bg-gold-light text-black font-extrabold py-3 rounded-lg transition-all flex items-center justify-center gap-2 tracking-wider"
                   >
                     <Check size={18} />
-                    REZERVASYON
+                    {t('selectButton')}
                   </button>
                 </div>
               </div>

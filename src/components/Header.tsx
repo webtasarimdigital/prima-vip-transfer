@@ -4,6 +4,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Link, usePathname } from '@/i18n/routing';
 import { Phone, Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function Header({ phone }: { phone: string }) {
   const t = useTranslations('Navigation');
@@ -52,7 +53,14 @@ export default function Header({ phone }: { phone: string }) {
           
           {/* Logo (Bigger!) */}
           <Link href="/" className="flex items-center gap-2">
-            <img src="/prima-vip-logo.png" alt="Prima VIP Transfer" className="h-15 md:h-22 w-auto object-contain" />
+            <Image 
+              src="/prima-vip-logo.png" 
+              alt="Prima VIP Transfer" 
+              width={200} 
+              height={80} 
+              className="h-[60px] md:h-[88px] w-auto object-contain" 
+              priority
+            />
           </Link>
 
           {/* Desktop Nav */}

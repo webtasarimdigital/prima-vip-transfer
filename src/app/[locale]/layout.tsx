@@ -9,6 +9,21 @@ import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import '../globals.css';
 
 import { supabase } from '@/lib/supabase';
+import { unstable_cache } from 'next/cache';
+
+const getCachedSettings = unstable_cache(
+  async () => {
+    try {
+      const { data } = await supabase.from('settings').select('*').eq('id', 1).single();
+      return data;
+    } catch (e) {
+      console.error('Failed to load settings:', e);
+      return null;
+    }
+  },
+  ['site-settings'],
+  { revalidate: 3600 }
+);
 
 export default async function LocaleLayout({
   children,
@@ -28,14 +43,10 @@ export default async function LocaleLayout({
   let phone = '05323591039';
   let email = 'Primaviptransfer@gmail.com';
 
-  try {
-    const { data } = await supabase.from('settings').select('*').eq('id', 1).single();
-    if (data) {
-      phone = data.phone || phone;
-      email = data.email || email;
-    }
-  } catch (e) {
-    console.error('Failed to load settings:', e);
+  const data = await getCachedSettings();
+  if (data) {
+    phone = data.phone || phone;
+    email = data.email || email;
   }
  
   return (

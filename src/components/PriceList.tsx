@@ -1,12 +1,28 @@
 import { MapPin } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useTranslations } from 'next-intl';
+import { unstable_cache } from 'next/cache';
+
+const getCachedRoutes = unstable_cache(
+  async () => {
+    try {
+      const { data } = await supabase.from('route_price').select('*').order('id');
+      return data;
+    } catch (e) {
+      console.error('Failed to load route prices:', e);
+      return null;
+    }
+  },
+  ['route-prices'],
+  { revalidate: 3600 }
+);
 
 export default async function PriceList() {
   const t = useTranslations('Home');
   const tLoc = useTranslations('Locations');
 
-  const { data: routePrices } = await supabase.from('route_price').select('*').order('id');
+  const routePrices = await getCachedRoutes();
+
 
   // Complete list of 36 routes with prices matching the user's screenshot exactly!
   const fallbackPrices = [
