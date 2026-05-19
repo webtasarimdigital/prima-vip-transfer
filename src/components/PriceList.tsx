@@ -1,7 +1,11 @@
 import { MapPin } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useTranslations } from 'next-intl';
 
 export default async function PriceList() {
+  const t = useTranslations('Home');
+  const tLoc = useTranslations('Locations');
+
   const { data: routePrices } = await supabase.from('route_price').select('*').order('id');
 
   // Complete list of 36 routes with prices matching the user's screenshot exactly!
@@ -58,13 +62,21 @@ export default async function PriceList() {
 
   const displayPrices = routePrices && routePrices.length > 0 ? routePrices : fallbackPrices;
 
+  const translateLocation = (name: string) => {
+    if (name === 'Antalya Havalimanı') return tLoc('antalyaAirport');
+    if (name === 'Antalya Merkez') return tLoc('antalyaCenter');
+    if (name === 'Kaleiçi') return tLoc('kaleici');
+    if (name === 'Olimpos') return tLoc('olympos');
+    return name;
+  };
+
   return (
     <section className="py-20 bg-zinc-950">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Title Section */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gold uppercase tracking-widest inline-block relative pb-4">
-            FİYAT LİSTESİ
+            {t('priceListTitle')}
             <div className="absolute bottom-0 left-0 right-0 w-full h-[2px] bg-gold/50"></div>
           </h2>
         </div>
@@ -86,8 +98,8 @@ export default async function PriceList() {
                   </svg>
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-xs text-gray-500 font-medium tracking-wide uppercase">{item.from}</span>
-                  <span className="text-sm font-semibold text-white tracking-wide">{item.to}</span>
+                  <span className="text-xs text-gray-500 font-medium tracking-wide uppercase">{translateLocation(item.from)}</span>
+                  <span className="text-sm font-semibold text-white tracking-wide">{translateLocation(item.to)}</span>
                 </div>
               </div>
 

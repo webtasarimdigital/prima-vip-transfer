@@ -1,22 +1,29 @@
-import { ShieldCheck, Clock, Star, Users, Award, Car } from 'lucide-react';
+import { Users, Award, Car } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata = {
-  title: 'Hakkımızda | Prima VIP Transfer',
-  description: 'Antalya VIP transfer hizmeti sunan Prima VIP Transfer hakkında bilgi edinin. Lüks araçlar, profesyonel şoförler, 7/24 hizmet.',
-};
+export async function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
+  const t = await getTranslations({ locale, namespace: 'AboutPage' });
+  return {
+    title: t('metaTitle'),
+    description: t('metaDesc'),
+  };
+}
 
 export default function AboutPage() {
+  const t = useTranslations('AboutPage');
+
   return (
     <div className="pt-24 pb-20">
       {/* Hero Banner */}
       <section className="relative py-20 bg-gradient-to-b from-black to-primary">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 uppercase tracking-wider">
-            Hakkımızda
+            {t('title')}
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Yılların deneyimiyle Antalya'da premium VIP transfer hizmetleri sunuyoruz.
+            {t('subtitle')}
           </p>
         </div>
       </section>
@@ -38,17 +45,13 @@ export default function AboutPage() {
                 Prima <span className="text-gold">VIP</span> Transfer
               </h2>
               <p className="text-gray-400 leading-relaxed mb-4">
-                Antalya Havalimanı başta olmak üzere tüm turistik bölgelere VIP transfer hizmeti sunmaktayız. 
-                Müşterilerimizin konforunu ve güvenliğini ön planda tutarak, lüks araçlarımız ve profesyonel 
-                şoförlerimizle kesintisiz ulaşım çözümleri sağlıyoruz.
+                {t('text1')}
               </p>
               <p className="text-gray-400 leading-relaxed mb-4">
-                Her yolcumuza özel ilgi göstererek, havalimanı karşılama, otel transferi, şehirlerarası 
-                ulaşım ve özel tur organizasyonları düzenliyoruz. Araçlarımızda Wi-Fi, soğuk içecek, 
-                atıştırmalık ve bebek koltuğu gibi ek hizmetler sunulmaktadır.
+                {t('text2')}
               </p>
               <p className="text-gray-400 leading-relaxed">
-                7/24 hizmet anlayışımızla, siz seyahatinizin keyfini çıkarırken biz her detayla ilgileniyoruz.
+                {t('text3')}
               </p>
             </div>
           </div>
@@ -56,20 +59,20 @@ export default function AboutPage() {
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20">
             <div className="bg-secondary rounded-xl p-8 text-center border border-gray-800">
-              <div className="text-4xl font-bold text-gold mb-2">5000+</div>
-              <div className="text-gray-400 text-sm">Mutlu Müşteri</div>
+              <div className="text-4xl font-bold text-gold mb-2">{t('stat1')}</div>
+              <div className="text-gray-400 text-sm">{t('stat1Label')}</div>
             </div>
             <div className="bg-secondary rounded-xl p-8 text-center border border-gray-800">
-              <div className="text-4xl font-bold text-gold mb-2">10+</div>
-              <div className="text-gray-400 text-sm">Lüks Araç</div>
+              <div className="text-4xl font-bold text-gold mb-2">{t('stat2')}</div>
+              <div className="text-gray-400 text-sm">{t('stat2Label')}</div>
             </div>
             <div className="bg-secondary rounded-xl p-8 text-center border border-gray-800">
-              <div className="text-4xl font-bold text-gold mb-2">7/24</div>
-              <div className="text-gray-400 text-sm">Hizmet</div>
+              <div className="text-4xl font-bold text-gold mb-2">{t('stat3')}</div>
+              <div className="text-gray-400 text-sm">{t('stat3Label')}</div>
             </div>
             <div className="bg-secondary rounded-xl p-8 text-center border border-gray-800">
-              <div className="text-4xl font-bold text-gold mb-2">35+</div>
-              <div className="text-gray-400 text-sm">Rota</div>
+              <div className="text-4xl font-bold text-gold mb-2">{t('stat4')}</div>
+              <div className="text-gray-400 text-sm">{t('stat4Label')}</div>
             </div>
           </div>
 
@@ -80,8 +83,8 @@ export default function AboutPage() {
                 <Users className="text-gold" size={28} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white mb-2">Profesyonel Ekip</h3>
-                <p className="text-gray-400 text-sm">Deneyimli, güler yüzlü ve profesyonel şoförlerimiz sizi güvenle taşır.</p>
+                <h3 className="text-lg font-bold text-white mb-2">{t('feat1Title')}</h3>
+                <p className="text-gray-400 text-sm">{t('feat1Desc')}</p>
               </div>
             </div>
             <div className="flex gap-4">
@@ -89,8 +92,8 @@ export default function AboutPage() {
                 <Award className="text-gold" size={28} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white mb-2">Kalite Garantisi</h3>
-                <p className="text-gray-400 text-sm">Her aracımız düzenli bakım ve temizlik süreçlerinden geçmektedir.</p>
+                <h3 className="text-lg font-bold text-white mb-2">{t('feat2Title')}</h3>
+                <p className="text-gray-400 text-sm">{t('feat2Desc')}</p>
               </div>
             </div>
             <div className="flex gap-4">
@@ -98,8 +101,8 @@ export default function AboutPage() {
                 <Car className="text-gold" size={28} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white mb-2">Geniş Araç Filosu</h3>
-                <p className="text-gray-400 text-sm">Sedan'dan VIP minibüse kadar her ihtiyaca uygun araç seçenekleri.</p>
+                <h3 className="text-lg font-bold text-white mb-2">{t('feat3Title')}</h3>
+                <p className="text-gray-400 text-sm">{t('feat3Desc')}</p>
               </div>
             </div>
           </div>

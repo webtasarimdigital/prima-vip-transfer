@@ -1,29 +1,36 @@
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata = {
-  title: 'Foto Galeri | Prima VIP Transfer',
-  description: 'Prima VIP Transfer lüks araç filomuzu ve hizmetlerimizi görsellerle keşfedin.',
-};
-
-const GALLERY_ITEMS = [
-  { id: 1, src: '/prima-vip-arac.jpeg', type: 'image' as const, alt: 'Prima VIP Transfer Araç' },
-  { id: 2, src: '/prima-vip-araclar.jpeg', type: 'image' as const, alt: 'Prima VIP Transfer Araçlar' },
-  { id: 3, src: '/prima-vip-arac-ici.jpeg', type: 'image' as const, alt: 'Prima VIP Transfer Araç İçi' },
-  { id: 4, src: '/prima-vip-arac-ici-detay.jpeg', type: 'image' as const, alt: 'Prima VIP Transfer Araç İçi Detay' },
-  { id: 5, src: '/prima-vip-tanitim.mp4', type: 'video' as const, alt: 'Prima VIP Transfer Tanıtım Videosu' },
-];
+export async function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
+  const t = await getTranslations({ locale, namespace: 'GalleryPage' });
+  return {
+    title: t('metaTitle'),
+    description: t('metaDesc'),
+  };
+}
 
 export default function GalleryPage() {
+  const t = useTranslations('GalleryPage');
+
+  const GALLERY_ITEMS = [
+    { id: 1, src: '/prima-vip-arac.jpeg', type: 'image' as const, alt: t('imgAlt1') },
+    { id: 2, src: '/prima-vip-araclar.jpeg', type: 'image' as const, alt: t('imgAlt2') },
+    { id: 3, src: '/prima-vip-arac-ici.jpeg', type: 'image' as const, alt: t('imgAlt3') },
+    { id: 4, src: '/prima-vip-arac-ici-detay.jpeg', type: 'image' as const, alt: t('imgAlt4') },
+    { id: 5, src: '/prima-vip-tanitim.mp4', type: 'video' as const, alt: t('videoAlt') },
+  ];
+
   return (
     <div className="pt-24 pb-20">
       {/* Hero Banner */}
       <section className="relative py-20 bg-gradient-to-b from-black to-primary">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 uppercase tracking-wider">
-            Foto Galeri
+            {t('title')}
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Lüks araç filomuzu ve hizmetlerimizi yakından keşfedin.
+            {t('subtitle')}
           </p>
         </div>
       </section>

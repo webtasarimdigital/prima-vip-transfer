@@ -45,5 +45,66 @@
     "copyright": "Tüm hakları saklıdır.",
     "privacy": "Gizlilik Politikası",
     "terms": "Şartlar & Koşullar"
+  },
+  "AboutPage": {
+    "metaTitle": "Hakkımızda | Prima VIP Transfer",
+    "metaDesc": "Antalya VIP transfer hizmeti sunan Prima VIP Transfer hakkında bilgi edinin. Lüks araçlar, profesyonel şoförler, 7/24 hizmet.",
+    "title": "Hakkımızda",
+    "subtitle": "Yılların deneyimiyle Antalya'da premium VIP transfer hizmetleri sunuyoruz.",
+    "heading": "Prima VIP Transfer",
+    "text1": "Antalya Havalimanı başta olmak üzere tüm turistik bölgelere VIP transfer hizmeti sunmaktayız. Müşterilerimizin konforunu ve güvenliğini ön planda tutarak, lüks araçlarımız ve profesyonel şoförlerimizin yardımıyla kesintisiz ulaşım çözümleri sağlıyoruz.",
+    "text2": "Her yolcumuza özel ilgi göstererek, havalimanı karşılama, otel transferi, şehirlerarası ulaşım ve özel tur organizasyonları düzenliyoruz. Araçlarımızda Wi-Fi, soğuk içecek, atıştırmalık ve bebek koltuğu gibi ek hizmetler sunulmaktadır.",
+    "text3": "7/24 hizmet anlayışımızla, siz seyahatinizin keyfini çıkarırken biz her detayla ilgileniyoruz.",
+    "stat1": "5000+",
+    "stat1Label": "Mutlu Müşteri",
+    "stat2": "10+",
+    "stat2Label": "Lüks Araç",
+    "stat3": "7/24",
+    "stat3Label": "Hizmet",
+    "stat4": "35+",
+    "stat4Label": "Rota",
+    "feat1Title": "Profesyonel Ekip",
+    "feat1Desc": "Deneyimli, güler yüzlü ve profesyonel şoförlerimiz sizi güvenle taşır.",
+    "feat2Title": "Kalite Garantisi",
+    "feat2Desc": "Her aracımız düzenli bakım ve temizlik süreçlerinden geçmektedir.",
+    "feat3Title": "Geniş Araç Filosu",
+    "feat3Desc": "Sedan'dan VIP minibüse kadar her ihtiyaca uygun araç seçenekleri."
+  },
+  "GalleryPage": {
+    "metaTitle": "Foto Galeri | Prima VIP Transfer",
+    "metaDesc": "Prima VIP Transfer lüks araç filomuzu ve hizmetlerimizi görsellerle keşfedin.",
+    "title": "Foto Galeri",
+    "subtitle": "Lüks araç filomuzu ve hizmetlerimizi yakından keşfedin.",
+    "imgAlt1": "Prima VIP Transfer Araç",
+    "imgAlt2": "Prima VIP Transfer Araçlar",
+    "imgAlt3": "Prima VIP Transfer Araç İçi",
+    "imgAlt4": "Prima VIP Transfer Araç İçi Detay",
+    "videoAlt": "Prima VIP Transfer Tanıtım Videosu"
+  },
+  "ContactPage": {
+    "metaTitle": "İletişim | Prima VIP Transfer",
+    "metaDesc": "Prima VIP Transfer ile iletişime geçin. Antalya VIP transfer rezervasyonu için 7/24 WhatsApp ve telefon desteği.",
+    "title": "İletişim",
+    "subtitle": "Bize 7/24 ulaşabilirsiniz. Tüm iletişim WhatsApp üzerinden gerçekleştirilmektedir.",
+    "whatsappTitle": "WhatsApp",
+    "whatsappDesc": "7/24 hızlı iletişim ve kolay rezervasyon",
+    "phoneTitle": "Telefon",
+    "phoneDesc": "Bizi doğrudan arayabilirsiniz",
+    "emailTitle": "E-posta",
+    "emailDesc": "Bilgi amaçlı iletişim",
+    "addressTitle": "Adres",
+    "addressDesc": "Operasyon merkezi",
+    "addressVal": "Antalya Havalimanı, Muratpaşa / Antalya"
+  },
+  "Locations": {
+    "antalyaAirport": "Antalya Havalimanı",
+    "antalyaCenter": "Antalya Merkez",
+    "kaleici": "Kaleiçi",
+    "olympos": "Olimpos"
+  },
+  "NotFound": {
+    "title": "404 - Sayfa Bulunamadı",
+    "desc": "Aradığınız sayfa mevcut değil veya taşınmış olabilir.",
+    "backHome": "Ana Sayfaya Dön"
   }
 }

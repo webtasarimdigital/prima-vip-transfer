@@ -45,5 +45,66 @@
     "copyright": "Alle Rechte vorbehalten.",
     "privacy": "Datenschutzerklärung",
     "terms": "AGB"
+  },
+  "AboutPage": {
+    "metaTitle": "Über Uns | Prima VIP Transfer",
+    "metaDesc": "Erfahren Sie mehr über den Prima VIP Transfer, der in Antalya VIP-Transferdienste anbietet. Luxusfahrzeuge, professionelle Fahrer, 24/7-Service.",
+    "title": "Über Uns",
+    "subtitle": "Wir bieten erstklassige VIP-Transferdienste in Antalya mit jahrelanger Erfahrung.",
+    "heading": "Prima VIP Transfer",
+    "text1": "Wir bieten VIP-Transferdienste in alle touristischen Gebiete an, insbesondere zum Flughafen Antalya. Um den Komfort und die Sicherheit unserer Kunden in den Vordergrund zu stellen, bieten wir ununterbrochene Transportlösungen mit unseren Luxusfahrzeugen und professionellen Fahrern.",
+    "text2": "Indem wir jedem Passagier besondere Aufmerksamkeit schenken, organisieren wir Flughafenbegrüßungen, Hoteltransfers, Fernverkehrstransporte und private Tourorganisationen. Zusätzliche Dienstleistungen wie WLAN, kalte Getränke, Snacks und Babysitze werden in unseren Fahrzeugen angeboten.",
+    "text3": "Mit unserem 24/7-Servicekonzept kümmern wir uns um jedes Detail, während Sie Ihre Reise genießen.",
+    "stat1": "5000+",
+    "stat1Label": "Zufriedene Kunden",
+    "stat2": "10+",
+    "stat2Label": "Luxusfahrzeuge",
+    "stat3": "24/7",
+    "stat3Label": "Service",
+    "stat4": "35+",
+    "stat4Label": "Routen",
+    "feat1Title": "Professionelles Team",
+    "feat1Desc": "Unsere erfahrenen, freundlichen und professionellen Fahrer bringen Sie sicher ans Ziel.",
+    "feat2Title": "Qualitätsgarantie",
+    "feat2Desc": "Jedes der Fahrzeuge wird regelmäßig gewartet und gereinigt.",
+    "feat3Title": "Großer Fuhrpark",
+    "feat3Desc": "Fahrzeugoptionen für jeden Bedarf vom Sedan bis zum VIP-Minibus."
+  },
+  "GalleryPage": {
+    "metaTitle": "Fotogalerie | Prima VIP Transfer",
+    "metaDesc": "Entdecken Sie den luxuriösen Fuhrpark und die Dienstleistungen von Prima VIP Transfer mit Bildern.",
+    "title": "Fotogalerie",
+    "subtitle": "Entdecken Sie unseren Luxusfuhrpark und unsere Dienstleistungen aus der Nähe.",
+    "imgAlt1": "Prima VIP Transfer Fahrzeug",
+    "imgAlt2": "Prima VIP Transfer Fahrzeuge",
+    "imgAlt3": "Prima VIP Transfer Innenraum",
+    "imgAlt4": "Prima VIP Transfer Innenraum Detail",
+    "videoAlt": "Prima VIP Transfer Werbevideo"
+  },
+  "ContactPage": {
+    "metaTitle": "Kontakt | Prima VIP Transfer",
+    "metaDesc": "Kontaktieren Sie Prima VIP Transfer. 24/7 WhatsApp- und Telefonsupport für die Buchung von VIP-Transfers in Antalya.",
+    "title": "Kontakt",
+    "subtitle": "Sie können uns rund um die Uhr erreichen. Die gesamte Kommunikation erfolgt über WhatsApp.",
+    "whatsappTitle": "WhatsApp",
+    "whatsappDesc": "24/7 schnelle Kommunikation und einfache Buchung",
+    "phoneTitle": "Telefon",
+    "phoneDesc": "Sie können uns direkt anrufen",
+    "emailTitle": "E-Mail",
+    "emailDesc": "Kommunikation für Informationen",
+    "addressTitle": "Adresse",
+    "addressDesc": "Betriebszentrum",
+    "addressVal": "Flughafen Antalya, Muratpasa / Antalya"
+  },
+  "Locations": {
+    "antalyaAirport": "Flughafen Antalya",
+    "antalyaCenter": "Antalya Zentrum",
+    "kaleici": "Kaleiçi (Altstadt)",
+    "olympos": "Olympos"
+  },
+  "NotFound": {
+    "title": "404 - Seite nicht gefunden",
+    "desc": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+    "backHome": "Zurück zur Startseite"
   }
 }

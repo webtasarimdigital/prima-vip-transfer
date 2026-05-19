@@ -15,8 +15,7 @@ export async function PUT(req: NextRequest) {
   const body = await req.json();
   const { data, error } = await supabase
     .from('settings')
-    .update({ phone: body.phone, email: body.email })
-    .eq('id', 1)
+    .upsert({ id: 1, phone: body.phone, email: body.email })
     .select()
     .single();
 
@@ -25,3 +24,4 @@ export async function PUT(req: NextRequest) {
   }
   return NextResponse.json(data);
 }
+

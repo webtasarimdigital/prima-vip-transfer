@@ -1,13 +1,36 @@
-import { Phone, Mail, MapPin, Clock, MessageCircle } from 'lucide-react';
+import { Phone, Mail, MapPin, MessageCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
+import { supabase } from '@/lib/supabase';
 
-export const metadata = {
-  title: 'İletişim | Prima VIP Transfer',
-  description: 'Prima VIP Transfer ile iletişime geçin. Antalya VIP transfer rezervasyonu için 7/24 WhatsApp ve telefon desteği.',
-};
+export async function generateMetadata({ params: { locale } }: { params: { locale: string } }) {
+  const t = await getTranslations({ locale, namespace: 'ContactPage' });
+  return {
+    title: t('metaTitle'),
+    description: t('metaDesc'),
+  };
+}
 
-export default function ContactPage() {
-  const phone = '05323591039';
-  const email = 'Primaviptransfer@gmail.com';
+export default async function ContactPage() {
+  const t = useTranslations('ContactPage');
+
+  // Fetch dynamic phone and email from Supabase settings table
+  let phone = '05323591039';
+  let email = 'Primaviptransfer@gmail.com';
+
+  try {
+    const { data: settingsData } = await supabase
+      .from('settings')
+      .select('phone, email')
+      .eq('id', 1)
+      .single();
+    
+    if (settingsData?.phone) phone = settingsData.phone;
+    if (settingsData?.email) email = settingsData.email;
+  } catch (e) {
+    console.error("Error loading settings in ContactPage:", e);
+  }
+
   const waNumber = phone.replace(/\D/g, '');
 
   return (
@@ -16,10 +39,10 @@ export default function ContactPage() {
       <section className="relative py-20 bg-gradient-to-b from-black to-primary">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 uppercase tracking-wider">
-            İletişim
+            {t('title')}
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Bize 7/24 ulaşabilirsiniz. Tüm iletişim WhatsApp üzerinden gerçekleştirilmektedir.
+            {t('subtitle')}
           </p>
         </div>
       </section>
@@ -38,8 +61,8 @@ export default function ContactPage() {
               <div className="w-20 h-20 bg-[#25D366]/20 rounded-full flex items-center justify-center mb-6">
                 <MessageCircle className="text-[#25D366]" size={40} />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-3">WhatsApp</h3>
-              <p className="text-gray-400 mb-4">7/24 hızlı iletişim ve kolay rezervasyon</p>
+              <h3 className="text-2xl font-bold text-white mb-3">{t('whatsappTitle')}</h3>
+              <p className="text-gray-400 mb-4">{t('whatsappDesc')}</p>
               <span className="text-[#25D366] font-bold text-lg">{phone}</span>
             </a>
             
@@ -51,8 +74,8 @@ export default function ContactPage() {
               <div className="w-20 h-20 bg-gold/10 rounded-full flex items-center justify-center mb-6">
                 <Phone className="text-gold" size={40} />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-3">Telefon</h3>
-              <p className="text-gray-400 mb-4">Bizi doğrudan arayabilirsiniz</p>
+              <h3 className="text-2xl font-bold text-white mb-3">{t('phoneTitle')}</h3>
+              <p className="text-gray-400 mb-4">{t('phoneDesc')}</p>
               <span className="text-gold font-bold text-lg">{phone}</span>
             </a>
             
@@ -61,8 +84,8 @@ export default function ContactPage() {
               <div className="w-20 h-20 bg-gold/10 rounded-full flex items-center justify-center mb-6">
                 <Mail className="text-gold" size={40} />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-3">E-posta</h3>
-              <p className="text-gray-400 mb-4">Bilgi amaçlı iletişim</p>
+              <h3 className="text-2xl font-bold text-white mb-3">{t('emailTitle')}</h3>
+              <p className="text-gray-400 mb-4">{t('emailDesc')}</p>
               <span className="text-gold font-bold">{email}</span>
             </div>
             
@@ -71,9 +94,9 @@ export default function ContactPage() {
               <div className="w-20 h-20 bg-gold/10 rounded-full flex items-center justify-center mb-6">
                 <MapPin className="text-gold" size={40} />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-3">Adres</h3>
-              <p className="text-gray-400 mb-4">Operasyon merkezi</p>
-              <span className="text-gold font-bold">Antalya Havalimanı, Muratpaşa / Antalya</span>
+              <h3 className="text-2xl font-bold text-white mb-3">{t('addressTitle')}</h3>
+              <p className="text-gray-400 mb-4">{t('addressDesc')}</p>
+              <span className="text-gold font-bold">{t('addressVal')}</span>
             </div>
           </div>
         </div>

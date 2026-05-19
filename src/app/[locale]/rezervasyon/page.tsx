@@ -201,21 +201,31 @@ export default function ReservationPage() {
   const filteredVehicles = VEHICLES.filter(v => v.pax >= pax);
 
   const handleSelect = (vehicleId: number, price: number) => {
-    const params = new URLSearchParams({
-      from,
-      to,
-      pax: pax.toString(),
-      currency,
-      direction,
-      vehicleId: vehicleId.toString(),
-      price: price.toString(),
+    router.push({
+      pathname: '/rezervasyon/step-2',
+      query: {
+        from,
+        to,
+        pax: pax.toString(),
+        currency,
+        direction,
+        vehicleId: vehicleId.toString(),
+        price: price.toString(),
+      }
     });
-    router.push(`/rezervasyon/step-2?${params.toString()}` as any);
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push(`/rezervasyon?from=${searchFrom}&to=${searchTo}&pax=${searchPax}&currency=${searchCurrency}`);
+    router.push({
+      pathname: '/rezervasyon',
+      query: {
+        from: searchFrom,
+        to: searchTo,
+        pax: searchPax,
+        currency: searchCurrency
+      }
+    });
   };
 
   // State 1: Display Stunning Vertical Hızlı Rezervasyon Form (Direct Visit)

@@ -15,7 +15,15 @@ export default function Hero() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push(`/rezervasyon?from=${from}&to=${to}&pax=${pax}&currency=${currency}`);
+    router.push({
+      pathname: '/rezervasyon',
+      query: {
+        from,
+        to,
+        pax,
+        currency
+      }
+    });
   };
 
   const locations = [
