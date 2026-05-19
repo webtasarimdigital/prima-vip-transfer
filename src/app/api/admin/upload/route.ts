@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,36 +12,51 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Dosya bulunamadı.' }, { status: 400 });
     }
 
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json({ error: 'Dosya boyutu 5MB\'dan büyük olamaz!' }, { status: 400 });
+    }
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    // Use service role key if available (bypasses RLS for uploads)
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY 
+      || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
+    
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
     const filePath = `uploads/${fileName}`;
 
-    // Ensure bucket exists or just try uploading
-    // Supabase needs to have a bucket named 'gallery' set to public
+    // Convert File to ArrayBuffer then Uint8Array for compatibility
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = new Uint8Array(arrayBuffer);
+
     const { data, error } = await supabase.storage
       .from('gallery')
-      .upload(filePath, file, {
-        upsert: false
+      .upload(filePath, buffer, {
+        contentType: file.type,
+        upsert: false,
       });
 
     if (error) {
-      // If bucket doesn't exist, try to create it first (requires admin key, which we have)
+      console.error('Storage upload error:', error);
+      
+      // If bucket doesn't exist, create it
       if (error.message.includes('Bucket not found')) {
-        await supabase.storage.createBucket('gallery', { public: true });
+        const { error: bucketError } = await supabase.storage.createBucket('gallery', { public: true });
+        if (bucketError) {
+          return NextResponse.json({ error: 'Bucket oluşturulamadı: ' + bucketError.message }, { status: 500 });
+        }
         
-        // Retry upload
+        // Retry
         const retry = await supabase.storage
           .from('gallery')
-          .upload(filePath, file, {
-            upsert: false
-          });
-          
+          .upload(filePath, buffer, { contentType: file.type, upsert: false });
+        
         if (retry.error) {
-           console.error("Storage upload error after bucket creation:", retry.error);
-           return NextResponse.json({ error: 'Görsel yüklenemedi.' }, { status: 500 });
+          return NextResponse.json({ error: 'Görsel yüklenemedi: ' + retry.error.message }, { status: 500 });
         }
       } else {
-        console.error("Storage upload error:", error);
         return NextResponse.json({ error: 'Görsel yüklenemedi: ' + error.message }, { status: 500 });
       }
     }
@@ -51,7 +66,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ url: publicUrlData.publicUrl });
   } catch (error: any) {
-    console.error("Upload handler error:", error);
-    return NextResponse.json({ error: 'Sunucu hatası: ' + error.message }, { status: 500 });
+    console.error('Upload handler error:', error);
+    return NextResponse.json({ error: 'Sunucu hatası: ' + (error.message || 'Bilinmeyen hata') }, { status: 500 });
   }
 }
