@@ -31,6 +31,21 @@ interface GalleryItem {
   type: string;
 }
 
+const ADMIN_LOCATIONS = [
+  'Antalya Havalimanı', 'Antalya Merkez', 'Lara', 'Kundu', 'Kaleiçi', 'Konyaaltı',
+  'Belek', 'Boğazkent', 'Denizyaka',
+  'Kumköy', 'Gündoğdu', 'Çolaklı',
+  'Evrenseki', 'Side', 'Sorgun',
+  'Manavgat', 'Titreyengöl', 'Kızılot',
+  'Kızılağaç', 'Okurcalar', 'Avsallar',
+  'İncekum', 'Çenger', 'Konaklı',
+  'Türkler', 'Alanya', 'Mahmutlar',
+  'Kargıcak', 'Kestel',
+  'Beldibi', 'Göynük', 'Kemer',
+  'Çamyuva', 'Kiriş', 'Tekirova',
+  'Olimpos', 'Adrasan'
+];
+
 const DEFAULT_ROUTES: Record<string, number> = {
   'Antalya Merkez': 40, 'Lara': 40, 'Kundu': 40, 'Kaleiçi': 40, 'Konyaaltı': 40,
   'Belek': 45, 'Boğazkent': 45, 'Denizyaka': 50, 'Kumköy': 50, 'Gündoğdu': 50,
@@ -408,16 +423,20 @@ export default function AdminDashboard() {
               <div className="bg-secondary border border-gray-800 rounded-xl p-6 mb-8">
                 <h3 className="text-lg font-semibold text-white mb-4">Yeni Rota Ekle</h3>
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                  <input
-                    type="text" value={newRoute.from} onChange={(e) => setNewRoute({ ...newRoute, from: e.target.value })}
-                    placeholder="Nereden"
+                  <select
+                    value={newRoute.from} onChange={(e) => setNewRoute({ ...newRoute, from: e.target.value })}
                     className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
-                  />
-                  <input
-                    type="text" value={newRoute.to} onChange={(e) => setNewRoute({ ...newRoute, to: e.target.value })}
-                    placeholder="Nereye"
+                  >
+                    <option value="" disabled>Nereden</option>
+                    {ADMIN_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                  </select>
+                  <select
+                    value={newRoute.to} onChange={(e) => setNewRoute({ ...newRoute, to: e.target.value })}
                     className="bg-zinc-900 border border-gray-700 text-white rounded-lg p-3 outline-none focus:border-gold"
-                  />
+                  >
+                    <option value="" disabled>Nereye</option>
+                    {ADMIN_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                  </select>
                   <input
                     type="number" value={newRoute.price} onChange={(e) => setNewRoute({ ...newRoute, price: parseFloat(e.target.value) })}
                     placeholder="Fiyat"

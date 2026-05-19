@@ -161,12 +161,30 @@ export default function ReservationPage() {
   useEffect(() => {
     if (isSearchActive) {
       const fetchPrice = async () => {
+        // 1. Try to find exact match in either direction
+        const { data: exactMatch } = await supabase
+          .from('route_price')
+          .select('*')
+          .or(`and(from.eq."${fromRaw}",to.eq."${toRaw}"),and(from.eq."${toRaw}",to.eq."${fromRaw}")`)
+          .maybeSingle();
+
+        if (exactMatch) {
+          setDbRouteData(exactMatch);
+          return;
+        }
+
+        // 2. Fallback to standard airport destination lookup if no exact match found
         let routeDest = toRaw;
         if (toRaw === 'Antalya Havalimanı') routeDest = fromRaw;
 
-        const { data } = await supabase.from('route_price').select('*').eq('to', routeDest).single();
-        if (data) {
-          setDbRouteData(data);
+        const { data: fallbackMatch } = await supabase
+          .from('route_price')
+          .select('*')
+          .eq('to', routeDest)
+          .maybeSingle();
+
+        if (fallbackMatch) {
+          setDbRouteData(fallbackMatch);
         }
       };
 
